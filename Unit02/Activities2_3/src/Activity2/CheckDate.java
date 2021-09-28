@@ -29,18 +29,13 @@ public class CheckDate {
         return month;
     }
 
-    public boolean setMonth(int month) {
+    public void setMonth(int month) {
         if (month > maxMonth || month < 1) {
-            this.month = Integer.parseInt(null);
-            return false;
-        }
-        else if (month == 2 && this.day < 29) {
-            this.month = Integer.parseInt(null);
-            return false;
-        }
-        else {
+            throw new IllegalArgumentException("Value must be between the range 1-31.");
+        } else if (month == 2 && this.day > 29) {
+            throw new IllegalArgumentException("February (month 2) cannot have a day greater than 29.");
+        } else {
             this.month = month;
-            return true;
         }
     }
 

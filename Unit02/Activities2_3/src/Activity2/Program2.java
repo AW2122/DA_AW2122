@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Program2 {
     public static void main(String[] args) {
+        String cont = "y";
         Scanner sc = new Scanner(System.in);
         System.out.println("Type in a day: ");
         int day = sc.nextInt();
@@ -18,12 +19,15 @@ public class Program2 {
         else {
             System.out.println("The day is out of range. ");
         }
-        if (d.setMonth(month)) {
-            System.out.printf("The month entered is %s. \n", month);
+
+        try {
+            d.setMonth(month);
+            System.out.printf("The month entered is %s ", month);
         }
-        else {
-            System.out.println("The month is out of range.");
+        catch (IllegalArgumentException i) {
+            System.out.println("Argument out of range.");
         }
+
         System.out.print(year);
         if (d.isLeapYear(year)) {
             System.out.println(" is a leap year.");
