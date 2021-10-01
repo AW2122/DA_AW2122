@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.io.IOException;
 
 public class Program {
     public static void main(String[] args) {
@@ -22,8 +23,8 @@ public class Program {
                 System.out.println("The image is a .PNG");
             }
         }
-        catch (Exception e){
-
+        catch (IOException e) {
+            System.out.println("Cannot read file");
         }
     }
 }
