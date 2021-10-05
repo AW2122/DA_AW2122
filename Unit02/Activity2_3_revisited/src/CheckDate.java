@@ -18,30 +18,42 @@ public class CheckDate {
             throw new IllegalArgumentException("Incorrect date.");
         }
     }
+
+    public int getDay() {
+        return day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
     public boolean validateDate(int day, int month, int year) {
         boolean leapYear = isLeapYear(year);
-        if (day >= 1 && day <= 31) {
-            if (month >= 1 && month <= 12) {
-                if ((month == 6 || month == 4 || month == 9 || month == 11) && day == 31) {
-                    throw new IllegalArgumentException("The month entered only has 30 days.");
-                } else if (month == 2 && this.day > 29) {
-                    if (!leapYear) {
-                        throw new IllegalArgumentException("February (month 2) cannot have a day greater than 29 if it's not a leap year.");
-                    }
-                    throw new IllegalArgumentException("February (month 2) cannot have a day greater than 28.");
-                } else {
-                    return true;
-                }
-            }
-        }
-        else {
+        if (day < 1 || day > 31) {
             return false;
         }
-        return false;
+        if (month < 1 || month > 12) {
+            return false;
+        }
+        if (month == 2) {
+            if (leapYear && day < 29) {
+                return false;
+            }
+            if (!leapYear && day > 28) {
+                return false;
+            }
+        }
+        if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+            return false;
+        }
+        return true;
     }
     public void setDay(int day) {
-        if (day >= 1 && day <= maxDay)
-        {
+        if (validateDate(day, getMonth(), getYear())) {
             this.day = day;
         }
         else {
