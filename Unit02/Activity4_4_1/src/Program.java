@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 
@@ -9,32 +11,42 @@ public class Program {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         PrintWriter printWriter  = null;
-        boolean overwrite = false;
+        boolean overwrite;
         try {
             System.out.printf("Please enter the name of the file: ");
             String file = sc.nextLine();
             String input;
+            long number = 0;
 
             if (new File(file).exists()) {
-                printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, overwrite)));
                 System.out.println("The file exists. Would you like to overwrite it? Y/N ");
                 do {
                     input = sc.nextLine();
                 } while (!input.matches("(?i)[YN]"));
 
                 if (input.equalsIgnoreCase("y")) {
-                    overwrite = true;
+                    printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, false)));
                     System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
                     do {
                         input = sc.nextLine();
                         if (!input.equalsIgnoreCase("exit")) {
-                            printWriter.println(input);
+                            printWriter.println(number + " " + input);
+                            number++;
                         }
                     } while (!input.equalsIgnoreCase("exit"));
 
                 } else {
-                    overwrite = false;
-
+                    printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+                    number = Files.lines(Paths.get(file)).count();
+                    CharSequence csq;
+                    System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
+                    do {
+                        input = sc.nextLine();
+                        if (!input.equalsIgnoreCase("exit")) {
+                            printWriter.println(number + " " + input);
+                            number++;
+                        }
+                    } while (!input.equalsIgnoreCase("exit"));
                 }
             }
             else {
@@ -45,7 +57,8 @@ public class Program {
                 do {
                     input = sc.nextLine();
                     if (!input.equalsIgnoreCase("exit")) {
-                        printWriter.println(input);
+                        printWriter.println(number + " " + input);
+                        number++;
                     }
                 } while (!input.equalsIgnoreCase("exit"));
             }
