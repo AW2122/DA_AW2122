@@ -24,30 +24,20 @@ public class Program {
                     input = sc.nextLine();
                 } while (!input.matches("(?i)[YN]"));
 
-                if (input.equalsIgnoreCase("y")) {
-                    printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, false)));
-                    System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
-                    do {
-                        input = sc.nextLine();
-                        if (!input.equalsIgnoreCase("exit")) {
-                            printWriter.println(number + " " + input);
-                            number++;
-                        }
-                    } while (!input.equalsIgnoreCase("exit"));
+                overwrite = input.equalsIgnoreCase("Y");
+                printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, !overwrite)));
 
-                } else {
-                    printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+                if (input.equalsIgnoreCase("n")) {
                     number = Files.lines(Paths.get(file)).count();
-                    CharSequence csq;
-                    System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
-                    do {
-                        input = sc.nextLine();
-                        if (!input.equalsIgnoreCase("exit")) {
-                            printWriter.println(number + " " + input);
-                            number++;
-                        }
-                    } while (!input.equalsIgnoreCase("exit"));
                 }
+                System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
+                do {
+                    input = sc.nextLine();
+                    if (!input.equalsIgnoreCase("exit")) {
+                        printWriter.println(number + " " + input);
+                        number++;
+                    }
+                } while (!input.equalsIgnoreCase("exit"));
             }
             else {
                 System.out.println("File does not exist. Creating file...");
