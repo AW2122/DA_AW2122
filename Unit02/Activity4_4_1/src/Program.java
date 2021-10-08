@@ -21,8 +21,8 @@ public class Program {
                     input = sc.nextLine();
                 } while (!input.matches("(?i)[YN]"));
 
-                overwrite = input.equalsIgnoreCase("Y");
-                printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, !overwrite)));
+                overwrite = input.equalsIgnoreCase("N");
+                printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file, overwrite)));
 
                 if (input.equalsIgnoreCase("n")) {
                     number = Files.lines(Paths.get(file)).count();
