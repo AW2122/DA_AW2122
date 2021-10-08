@@ -5,9 +5,6 @@ import java.util.Scanner;
 
 
 public class Program {
-    public static void LinePrinter() {
-
-    }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         PrintWriter printWriter  = null;
@@ -30,28 +27,20 @@ public class Program {
                 if (input.equalsIgnoreCase("n")) {
                     number = Files.lines(Paths.get(file)).count();
                 }
-                System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
-                do {
-                    input = sc.nextLine();
-                    if (!input.equalsIgnoreCase("exit")) {
-                        printWriter.println(number + " " + input);
-                        number++;
-                    }
-                } while (!input.equalsIgnoreCase("exit"));
             }
             else {
                 System.out.println("File does not exist. Creating file...");
                 FileOutputStream newFile = new FileOutputStream(file, false);
                 printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-                System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
-                do {
-                    input = sc.nextLine();
-                    if (!input.equalsIgnoreCase("exit")) {
-                        printWriter.println(number + " " + input);
-                        number++;
-                    }
-                } while (!input.equalsIgnoreCase("exit"));
             }
+            System.out.println("Type sentences to add to the file. Type \"exit\" + press Enter to finish. ");
+            do {
+                input = sc.nextLine();
+                if (!input.equalsIgnoreCase("exit")) {
+                    printWriter.println(number + " " + input);
+                    number++;
+                }
+            } while (!input.equalsIgnoreCase("exit"));
         }
         catch (Exception e) {
 
