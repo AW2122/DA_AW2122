@@ -1,51 +1,72 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 
 public class Program {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        Scanner scannerFile1 = null;
-        Scanner scannerFile2 = null;
-        String file1Line = null;
-        String file2Line = null;
-        System.out.println("Please enter the name of the first file: ");
+        System.out.println("Please enter the first filename: ");
         File file1 = new File(sc.nextLine());
-        System.out.println("Please enter the name of the second file: ");
+        System.out.println("Please enter the second filename: ");
         File file2 = new File(sc.nextLine());
+
+        BufferedReader reader1 = null;
+        BufferedReader reader2 = null;
+
         try (PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter("sorted.txt")))) {
+
+            reader1 = new BufferedReader(new FileReader(file1));
+            reader2 = new BufferedReader(new FileReader(file2));
+
+            String textFile1;
+            String textFile2;
+
             if (file1.exists() && file2.exists()) {
-                file1Line = scannerFile1.nextLine();
-                file2Line = scannerFile2.nextLine();
-                while (scannerFile1.hasNext() && scannerFile2.hasNext()) {
-                    if (file1Line.compareTo(file2Line) > 0) {
-                        printWriter.println(file2Line);
-                        file2Line = scannerFile2.nextLine();
+                textFile1 = reader1.readLine();
+                textFile2 = reader2.readLine();
+
+                if (textFile1 != null && textFile2 != null) {
+                    while (textFile1 != null && textFile2 != null) {
+                        if (textFile1.compareTo(textFile2) > 0) {
+                            printWriter.println(textFile1);
+                            textFile1 = reader1.readLine();
+                        } else if (textFile1.compareTo(textFile2) < 0) {
+                            printWriter.println(textFile2);
+                            textFile2 = reader2.readLine();
+                        } else if (textFile1.compareTo(textFile2) == 0) {
+                            printWriter.println(textFile1);
+                            textFile1 = reader1.readLine();
+
+                            printWriter.println(textFile2);
+                            textFile2 = reader2.readLine();
+                        }
+                    }
+                }
+                while (textFile1 != null || textFile2 != null) {
+                    if (textFile1 == null) {
+                        printWriter.println(textFile2);
+                        textFile2 = reader2.readLine();
                     } else {
-                        printWriter.println(file1Line);
-                        file1Line = scannerFile1.nextLine();
-                    }
-                }
-                if (scannerFile1.hasNext()){
-                    printWriter.println(file1Line);
-                    while (scannerFile1.hasNext()) {
-                        printWriter.println(scannerFile1.nextLine());
-                    }
-                }
-                if (scannerFile2.hasNext()){
-                    printWriter.println(file2Line);
-                    while (scannerFile2.hasNext()) {
-                        printWriter.println(scannerFile2.nextLine());
+                        printWriter.println(textFile1);
+                        textFile1 = reader1.readLine();
                     }
                 }
             }
         }
-        catch (Exception e) {
+        catch (IOException e) {
             e.printStackTrace();
         }
-
+        finally {
+            try {
+                if (reader1 != null) {
+                    reader1.close();
+                }
+                if (reader2 != null) {
+                    reader2.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

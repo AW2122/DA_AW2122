@@ -61,7 +61,16 @@ public class CheckDate {
         }
     }
     public void setMonth(int month) {
-        if (day >= 1 && day <= maxMonth)
+        if (validateDate(getDay(), month, getYear()))
+        {
+            this.month = month;
+        }
+        else {
+            throw new IllegalArgumentException("Month out of range.");
+        }
+    }
+    public void setYear(int year) {
+        if (validateDate(getDay(), getMonth(), year)
         {
             this.month = month;
         }
