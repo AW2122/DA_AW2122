@@ -8,6 +8,8 @@ public class Contacts implements Serializable {
     protected String phoneNumber;
     protected String description;
 
+    public Contacts() {}
+
     public Contacts(String name, String surname, String email, String phoneNumber, String description) {
         this.name = name;
         this.surname = surname;
@@ -56,8 +58,7 @@ public class Contacts implements Serializable {
         this.description = description;
     }
 
-    public String toString() {
-        return "Name: " + name + "\n" + "Surname: " + surname + "\n" + "E-mail: " + email + "\n" + "Phone: " +
-                phoneNumber + "\n" + "Description: " + description;
+    public String fullName() {
+        return this.getName() + " " + this.getSurname();
     }
 }
