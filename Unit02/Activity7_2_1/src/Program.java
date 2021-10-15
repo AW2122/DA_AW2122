@@ -35,7 +35,7 @@ class myXMLContactsHandler extends DefaultHandler {
             if (qName.equals("cell")) {
                 System.out.println(" " + qName + ": " + tagContent.toString());
             }
-            
+
         }
     }
 }
