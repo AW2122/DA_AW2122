@@ -6,4 +6,18 @@
 		<phone> l </phone> 
 		<description> l </description> 
 	</contact>
+	<contact id="1">
+		<name> asl </name> 
+		<surname> asñld </surname> 
+		<email> asldk </email> 
+		<phone> salkd </phone> 
+		<description> alskd </description> 
+	</contact>
+	<contact id="2">
+		<name> Jose </name> 
+		<surname> Joshua </surname> 
+		<email> josjd </email> 
+		<phone> djo </phone> 
+		<description> jd </description> 
+	</contact>
 </contactList>

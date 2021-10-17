@@ -11,7 +11,6 @@ class myXMLContactsHandler extends DefaultHandler {
     protected StringBuilder tagContent = new StringBuilder();
     protected boolean inPhone = false;
     protected String name;
-    protected String homePhone;
 
     // Tag opening found
     //

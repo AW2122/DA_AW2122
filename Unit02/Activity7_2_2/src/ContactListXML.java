@@ -8,7 +8,6 @@ public class ContactListXML extends ContactList {
         PrintWriter printWriter = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
         printWriter.printf("<contactList>\n");
-
         for (int i = 0; i < this.size(); i++) {
             Contacts c = get(i);
             printWriter.printf("\t<contact id=\"%s\">\n", i);
@@ -19,7 +18,6 @@ public class ContactListXML extends ContactList {
             printWriter.printf("\t\t<description> %s </description> \n", c.getDescription());
             printWriter.printf("\t</contact>\n");
         }
-
         printWriter.printf("</contactList>");
 
         printWriter.flush();
