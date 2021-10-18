@@ -61,7 +61,7 @@ public class myXMLContactsHandler extends DefaultHandler {
             isPhone = false;
         }
         if (isDescription) {
-            contact.setDescription(r);
+            contact.setDescription(replace);
             isDescription = false;
         }
     }
