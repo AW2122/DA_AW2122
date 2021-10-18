@@ -43,24 +43,25 @@ public class myXMLContactsHandler extends DefaultHandler {
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
+        String replace = new String(ch, start, length).replace("\n", "").replace("\t", "");
         if (isName) {
-            contact.setName(new String(ch, start, length));
+            contact.setName(replace);
             isName = false;
         }
         if (isSurname) {
-            contact.setSurname(new String(ch, start, length));
+            contact.setSurname(replace);
             isSurname = false;
         }
         if (isEmail) {
-            contact.setEmail(new String(ch, start, length));
+            contact.setEmail(replace);
             isEmail = false;
         }
         if (isPhone) {
-            contact.setPhoneNumber(new String(ch, start, length));
+            contact.setPhoneNumber(replace);
             isPhone = false;
         }
         if (isDescription) {
-            contact.setDescription(new String(ch, start, length));
+            contact.setDescription(r);
             isDescription = false;
         }
     }

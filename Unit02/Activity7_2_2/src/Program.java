@@ -22,6 +22,7 @@ public class Program {
         System.out.println("[1] Convert .obj file to .xml file.");
         System.out.println("[2] Convert .xml file to .obj file.");
         System.out.println("[0] Exit.");
+        System.out.println();
 
         while (!input.matches("[0-2]")) {
             System.out.println("Choose an option [0-2]: ");
@@ -39,7 +40,6 @@ public class Program {
             myXMLContactsHandler myXML = new myXMLContactsHandler();
 
             do {
-
                 option = Menu();
 
                 switch (option) {
