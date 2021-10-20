@@ -14,7 +14,11 @@ public class myXMLContactsHandler extends DefaultHandler {
     protected boolean isPhone = false;
     protected boolean isDescription = false;
     protected int id;
-    protected ContactList cList = new ContactList();
+    protected ContactList cList;
+
+    public myXMLContactsHandler(ContactList cList) {
+        this.cList =  cList;
+    }
 
     public void startElement(String uri, String localName, String qName, Attributes attribute) throws SAXException {
         currentTag = qName;

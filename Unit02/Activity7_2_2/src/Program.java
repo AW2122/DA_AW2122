@@ -14,6 +14,7 @@ public class Program {
     protected static Scanner sc;
     protected static String xmlFileName;
     protected static String objFileName;
+    protected static ContactList cList = new ContactList();
 
     public static int Menu() {
         String input = "";
@@ -37,7 +38,7 @@ public class Program {
 
         try {
             SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-            myXMLContactsHandler myXML = new myXMLContactsHandler();
+            myXMLContactsHandler myXML = new myXMLContactsHandler(cList);
 
             do {
                 option = Menu();
