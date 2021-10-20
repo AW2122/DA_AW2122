@@ -18,10 +18,10 @@ public class App {
             Statement statement = con.createStatement();
             String SQLsentence = "SELECT * FROM subjects ORDER BY code";
             ResultSet rs = statement.executeQuery(SQLsentence);
-            System.out.println("Code" + "\t" + "Name" + "\t" + "Year");
-            System.out.println("-------------------------");
+            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year");
+            System.out.println("---------------------------------------------");
             while (rs.next()) {
-                System.out.println(rs.getString(1 ) + "\t" + rs.getString(2) + "\t" + rs.getString(3));
+                System.out.printf("%s \t %-30s \t %s \n", rs.getString(1 ), rs.getString(2), rs.getString(3));
             }
             rs.close();
         }
