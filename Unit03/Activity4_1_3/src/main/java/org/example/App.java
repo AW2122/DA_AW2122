@@ -1,7 +1,10 @@
-package com.aw2122;
-
+package org.example;
 import java.sql.*;
 
+/**
+ * Hello world!
+ *
+ */
 public class App {
     public static void main( String[] args ) throws ClassNotFoundException, SQLException {
         Connection con = null;
@@ -12,12 +15,13 @@ public class App {
             String pwd = "0023";
             con = DriverManager.getConnection(url, user, pwd);
             Statement statement = con.createStatement();
+            statement.execute("ALTER TABLE subjects ADD COLUMN hours INT");
             String SQLsentence = "SELECT * FROM subjects ORDER BY code";
             ResultSet rs = statement.executeQuery(SQLsentence);
-            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year");
+            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year" + "\t");
             System.out.println("---------------------------------------------");
             while (rs.next()) {
-                System.out.printf("%s \t %-30s \t %s \n", rs.getString(1 ), rs.getString(2), rs.getString(3));
+                System.out.printf("%s \t %-30s \t %s \t %s\n", rs.getString(1 ), rs.getString(2), rs.getString(3), rs.getString(4));
             }
             rs.close();
         }
