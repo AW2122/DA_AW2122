@@ -16,14 +16,7 @@ public class App {
             con = DriverManager.getConnection(url, user, pwd);
             Statement statement = con.createStatement();
             statement.execute("ALTER TABLE subjects ADD COLUMN hours INT");
-            String SQLsentence = "SELECT * FROM subjects ORDER BY code";
-            ResultSet rs = statement.executeQuery(SQLsentence);
-            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year" + "\t");
-            System.out.println("---------------------------------------------");
-            while (rs.next()) {
-                System.out.printf("%s \t %-30s \t %s \t %s\n", rs.getString(1 ), rs.getString(2), rs.getString(3), rs.getString(4));
-            }
-            rs.close();
+            statement.close();
         }
         catch (ClassNotFoundException e) {
             System.out.println("Cannot load PostgreSQL Driver.");

@@ -14,14 +14,7 @@ public class App {
             Statement statement = con.createStatement();
             String insert = "INSERT INTO subjects(name, year) VALUES('Markup Languages', 1)";
             statement.execute(insert);
-            String SQLsentence = "SELECT * FROM subjects ORDER BY code";
-            ResultSet rs = statement.executeQuery(SQLsentence);
-            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year");
-            System.out.println("---------------------------------------------");
-            while (rs.next()) {
-                System.out.printf("%s \t %-30s \t %s \n", rs.getString(1), rs.getString(2), rs.getString(3));
-            }
-            rs.close();
+            statement.close();
         } catch (ClassNotFoundException e) {
             System.out.println("Cannot load PostgreSQL Driver.");
         } catch (SQLException e) {

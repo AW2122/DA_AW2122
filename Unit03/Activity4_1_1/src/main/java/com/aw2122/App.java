@@ -14,7 +14,7 @@ public class App {
             Statement statement = con.createStatement();
             String SQLsentence = "SELECT * FROM subjects ORDER BY code";
             ResultSet rs = statement.executeQuery(SQLsentence);
-            System.out.println("Code" + "\t" + "Name" + "\t\t\t\t\t\t\t" + "Year");
+            System.out.printf("%s \t %-30s %s \n", "Code", "Name", "Year");
             System.out.println("---------------------------------------------");
             while (rs.next()) {
                 System.out.printf("%s \t %-30s \t %s \n", rs.getString(1 ), rs.getString(2), rs.getString(3));
