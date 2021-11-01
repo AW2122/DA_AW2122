@@ -1,0 +1,18 @@
+CREATE OR REPLACE FUNCTION namePattern(pattern VARCHAR(10))
+	RETURNS SETOF employee
+	LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+	empl employee;
+BEGIN	
+	FOR empl IN
+	SELECT *
+	  FROM employee
+	 WHERE UPPER(ename) LIKE UPPER(CONCAT(pattern, '%'))
+	  LOOP
+	  	RETURN NEXT empl;
+	   END LOOP;
+END;
+$BODY$
+
+SELECT namePattern('a');

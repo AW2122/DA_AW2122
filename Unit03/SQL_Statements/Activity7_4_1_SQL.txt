@@ -1,0 +1,18 @@
+CREATE OR REPLACE FUNCTION employeelist (jobname varchar(9))
+	RETURNS SETOF employee
+	LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+	empl employee;
+BEGIN
+	FOR empl IN 
+	SELECT *
+	  FROM employee 
+	 WHERE job=jobname 
+    	  LOOP
+		RETURN NEXT empl;
+	   END LOOP;
+END;
+$BODY$;
+
+SELECT employeelist('SALESMAN');

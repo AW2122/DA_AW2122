@@ -1,0 +1,18 @@
+CREATE OR REPLACE FUNCTION departmentSearch(deptname VARCHAR(14))
+	RETURNS SETOF dept
+	LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+	department dept;
+BEGIN
+	FOR department IN
+	SELECT *
+	  FROM dept
+	 WHERE dname = deptname
+	  LOOP
+	  	RETURN NEXT department;
+	  END LOOP;
+END;
+$BODY$;
+
+SELECT departmentsearch('RESEARCH');
