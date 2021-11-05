@@ -8,7 +8,7 @@ BEGIN
 	FOR empl IN 
 	SELECT *
 	  FROM employee 
-	 WHERE job=jobname 
+	 WHERE UPPER(job) = UPPER(jobname) 
     	  LOOP
 		RETURN NEXT empl;
 	   END LOOP;
