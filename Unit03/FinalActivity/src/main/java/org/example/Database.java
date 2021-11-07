@@ -47,17 +47,15 @@ public class Database {
         }
     }
 
-    public int enrollStudent(String studentId, int courseCode) {
+    public void enrollStudent(String studentId, int courseCode) {
         try {
             Connection conn = DriverManager.getConnection(url, user, pwd);
             pstmt = conn.prepareStatement("INSERT INTO enrollment (student, course) VALUES (?, ?)");
             pstmt.setString(1, studentId);
             pstmt.setInt(2, courseCode);
             pstmt.executeUpdate();
-            return 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return 1;
         }
     }
 
