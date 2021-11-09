@@ -9,6 +9,7 @@ public class Database {
     static final String pwd = "0023";
     PreparedStatement pstmt = null;
 
+    /*
     public ArrayList<String> getData(String table, int index, String condition, String column) {
         ArrayList<String> idList = new ArrayList<>();
         try {
@@ -22,6 +23,23 @@ public class Database {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 idList.add(rs.getString(index));
+            }
+            return idList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return idList;
+    }
+    */
+
+    public ArrayList<String> getData(String sqlStatement) {
+        ArrayList<String> idList = new ArrayList<>();
+        try {
+            Connection conn = DriverManager.getConnection(url, user, pwd);
+            pstmt = conn.prepareStatement(sqlStatement);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                idList.add(rs.getString(1));
             }
             return idList;
         } catch (SQLException e) {
@@ -58,6 +76,19 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    public void insertSubjectsIntoScores(int enrollmentId) {
+        try {
+            Connection conn = DriverManager.getConnection(url, user, pwd);
+           // pstmt = conn.prepareStatement("INSERT INTO  subjects.code FROM subjects INNER JOIN courses c on c.code = subjects.course INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*public void addScores() {
+
+    */
 
 
 }

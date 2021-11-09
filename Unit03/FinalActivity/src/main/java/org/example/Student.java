@@ -14,6 +14,11 @@ public class Student {
         this.email = email;
         this.phone = phone;
     }
+    public Student(String firstName, String lastName, String idCard) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.idCard = idCard;
+    }
 
     public String getFirstName() {
         return firstName;

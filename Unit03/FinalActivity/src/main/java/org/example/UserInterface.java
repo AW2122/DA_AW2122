@@ -40,10 +40,16 @@ public class UserInterface {
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (tfFirstName.getText().isBlank() || tfLastName.getText().isBlank() || tfIdCard.getText().isBlank() || tfMail.getText().isBlank() || tfPhone.getText().isBlank())
-                    lblStatus.setText("Some fields are missing.");
+                if (tfFirstName.getText().isBlank() || tfLastName.getText().isBlank() || tfIdCard.getText().isBlank())
+                    lblStatus.setText("Some important fields are missing.");
                 else {
-                    Student student = new Student(tfFirstName.getText(), tfLastName.getText(), tfIdCard.getText(), tfMail.getText(), tfPhone.getText());
+                    Student student = new Student(tfFirstName.getText(), tfLastName.getText(), tfIdCard.getText());
+                    if (!tfPhone.getText().isBlank()) {
+                        student.setPhone(tfPhone.getText());
+                    }
+                    if (!tfMail.getText().isBlank()) {
+                        student.setPhone(tfMail.getText());
+                    }
                     if (db.addStudent(student) == 1)
                         lblStatus.setText("The student already exists.");
                     else
@@ -56,17 +62,22 @@ public class UserInterface {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String courseName = cbCourse.getSelectedItem().toString();
-                String courseCode = db.getData("courses", 1, courseName, "name").get(0);
-                db.enrollStudent(cbStudent.getSelectedItem().toString(), Integer.parseInt(courseCode));
+                String courseCode = db.getData("SELECT code FROM courses WHERE name = '" + courseName + "'").get(0);
+                if(db.getData("SELECT * FROM enrollment WHERE student = '" + cbStudent.getSelectedItem().toString() + "'") == null) {
+                    db.enrollStudent(cbStudent.getSelectedItem().toString(), Integer.parseInt(courseCode));
+                }
+                //else {
+
+                //}
             }
         });
     }
     public void UpdateCombo() {
-        for (String StudentId: db.getData("student", 3, "","idCard")) {
+        for (String StudentId: db.getData("SELECT idCard FROM student")) {
             cbStudent.addItem(StudentId);
         }
-        for (String courseId: db.getData("courses", 2, "", "*")) {
-            cbCourse.addItem(courseId);
+        for (String courseName: db.getData("SELECT name FROM courses")) {
+            cbCourse.addItem(courseName);
         }
     }
 
