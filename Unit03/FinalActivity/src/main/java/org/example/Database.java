@@ -68,24 +68,22 @@ public class Database {
     public void enrollStudent(String studentId, int courseCode) {
         try {
             Connection conn = DriverManager.getConnection(url, user, pwd);
-            pstmt = conn.prepareStatement("INSERT INTO enrollment (student, course) VALUES (?, ?)");
+            pstmt = conn.prepareStatement("INSERT INTO enrollment (student, course) VALUES (?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, studentId);
             pstmt.setInt(2, courseCode);
+            ResultSet keys = pstmt.getGeneratedKeys();
+            keys.next();
+            int enrollmentId = keys.getInt(1);
             pstmt.executeUpdate();
+            pstmt = conn.prepareStatement("INSERT INTO scores (enrollmentid, subjectid, scores) " +
+                    "SELECT e.code, subjects.code, 0 FROM subjects INNER JOIN courses c on c.code = subjects.course " +
+                    "INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId);
+            pstmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    public void insertSubjectsIntoScores(int enrollmentId) {
-        try {
-            Connection conn = DriverManager.getConnection(url, user, pwd);
-           // pstmt = conn.prepareStatement("INSERT INTO  subjects.code FROM subjects INNER JOIN courses c on c.code = subjects.course INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     /*public void addScores() {
 
     */

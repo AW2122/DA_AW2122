@@ -61,14 +61,18 @@ public class UserInterface {
         btnEnroll.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String studentId = cbStudent.getSelectedItem().toString();
                 String courseName = cbCourse.getSelectedItem().toString();
-                String courseCode = db.getData("SELECT code FROM courses WHERE name = '" + courseName + "'").get(0);
-                if(db.getData("SELECT * FROM enrollment WHERE student = '" + cbStudent.getSelectedItem().toString() + "'") == null) {
-                    db.enrollStudent(cbStudent.getSelectedItem().toString(), Integer.parseInt(courseCode));
+                int courseCode = Integer.parseInt(db.getData("SELECT code FROM courses WHERE name = '" + courseName + "'").get(0));
+                if(db.getData("SELECT * FROM enrollment WHERE student = '" + studentId + "' AND course = " + courseCode).size() > 0) {
+                    // Error alumno ya matriculado
                 }
-                //else {
-
-                //}
+                if (db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score <= 5 AND student = '" + studentId + "'").size() > 0) {
+                    // Error asignaturas suspensas
+                }
+                else {
+                    db.enrollStudent(studentId, courseCode);
+                }
             }
         });
     }
