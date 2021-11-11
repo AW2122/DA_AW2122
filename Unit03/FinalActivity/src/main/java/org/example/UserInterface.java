@@ -44,18 +44,18 @@ public class UserInterface {
                     lblStatus.setText("Some important fields are missing.");
                 else {
                     Student student = new Student(tfFirstName.getText(), tfLastName.getText(), tfIdCard.getText());
-                    if (!tfPhone.getText().isBlank()) {
-                        student.setPhone(tfPhone.getText());
-                    }
                     if (!tfMail.getText().isBlank()) {
                         student.setPhone(tfMail.getText());
+                    }
+                    if (!tfPhone.getText().isBlank()) {
+                        student.setPhone(tfPhone.getText());
                     }
                     if (db.addStudent(student) == 1)
                         lblStatus.setText("The student already exists.");
                     else
                         lblStatus.setText("Student added correctly.");
                 }
-
+                UpdateCombo();
             }
         });
         btnEnroll.addActionListener(new ActionListener() {
@@ -66,19 +66,30 @@ public class UserInterface {
                 int courseCode = Integer.parseInt(db.getData("SELECT code FROM courses WHERE name = '" + courseName + "'").get(0));
                 if(db.getData("SELECT * FROM enrollment WHERE student = '" + studentId + "' AND course = " + courseCode).size() > 0) {
                     // Error alumno ya matriculado
+                    System.out.println("error");
                 }
-                if (db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score <= 5 AND student = '" + studentId + "'").size() > 0) {
-                    // Error asignaturas suspensas
+                else if (Integer.parseInt(db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score <= 5 AND student = '" + studentId + "'").get(0)) > 0) {
+                     // Error asignaturas suspensas
+                    System.out.println("error");
                 }
                 else {
                     db.enrollStudent(studentId, courseCode);
                 }
             }
         });
+        btnPrint.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // inner join enrollment, scores, subjects, courses. Print in actionListener
+            }
+        });
     }
     public void UpdateCombo() {
+        cbCourse.removeAllItems();
+        cbStudent.removeAllItems();
         for (String StudentId: db.getData("SELECT idCard FROM student")) {
             cbStudent.addItem(StudentId);
+            comboBox3.addItem(StudentId);
         }
         for (String courseName: db.getData("SELECT name FROM courses")) {
             cbCourse.addItem(courseName);

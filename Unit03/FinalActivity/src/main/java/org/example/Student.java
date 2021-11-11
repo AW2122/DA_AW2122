@@ -7,13 +7,6 @@ public class Student {
     String email;
     String phone;
 
-    public Student(String firstName, String lastName, String idCard, String email, String phone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.idCard = idCard;
-        this.email = email;
-        this.phone = phone;
-    }
     public Student(String firstName, String lastName, String idCard) {
         this.firstName = firstName;
         this.lastName = lastName;

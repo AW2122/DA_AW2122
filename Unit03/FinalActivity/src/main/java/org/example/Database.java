@@ -67,19 +67,21 @@ public class Database {
 
     public void enrollStudent(String studentId, int courseCode) {
         try {
+            int enrollmentId = 0;
             Connection conn = DriverManager.getConnection(url, user, pwd);
             pstmt = conn.prepareStatement("INSERT INTO enrollment (student, course) VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, studentId);
             pstmt.setInt(2, courseCode);
-            ResultSet keys = pstmt.getGeneratedKeys();
-            keys.next();
-            int enrollmentId = keys.getInt(1);
             pstmt.executeUpdate();
-            pstmt = conn.prepareStatement("INSERT INTO scores (enrollmentid, subjectid, scores) " +
+            ResultSet keys = pstmt.getGeneratedKeys();
+            if (keys.next()) {
+                enrollmentId = keys.getInt(1);
+            }
+            pstmt = conn.prepareStatement("INSERT INTO scores (enrollmentid, subjectid, score) " +
                     "SELECT e.code, subjects.code, 0 FROM subjects INNER JOIN courses c on c.code = subjects.course " +
-                    "INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId);
-            pstmt.executeQuery();
+                    "INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId + " AND e.course = " + courseCode);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
