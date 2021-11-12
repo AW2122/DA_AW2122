@@ -1,5 +1,7 @@
 package org.example;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,6 +99,7 @@ public class UserInterface {
     }
 
     public static void main(String[] args) {
+        FlatDarkLaf.setup();
         JFrame frame = new JFrame("UserInterface");
         frame.setContentPane(new UserInterface().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
