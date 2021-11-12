@@ -80,15 +80,30 @@ public class Database {
             }
             pstmt = conn.prepareStatement("INSERT INTO scores (enrollmentid, subjectid, score) " +
                     "SELECT e.code, subjects.code, 0 FROM subjects INNER JOIN courses c on c.code = subjects.course " +
-                    "INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId + " AND e.course = " + courseCode);
+                    "INNER JOIN enrollment e on c.code = e.course WHERE e.code = " + enrollmentId + " " +
+                    "AND e.course = " + courseCode);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    /*public void addScores() {
 
-    */
-
-
+    public String GetScores (String studentId) {
+        try {
+            String result = "";
+            Connection conn = DriverManager.getConnection(url, user, pwd);
+            pstmt = conn.prepareStatement("select format('%s - %s: %s', c.name, s.name, score) " +
+                    "from scores inner join subjects s on s.code = scores.subjectid " +
+                    "inner join enrollment e on e.code = scores.enrollmentid " +
+                    "inner join courses c on c.code = e.course WHERE student = '" + studentId + "';"); // uwu
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                result += rs.getString(1) + "\n";
+            }
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

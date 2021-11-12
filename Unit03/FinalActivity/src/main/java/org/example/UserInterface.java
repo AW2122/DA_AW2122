@@ -80,7 +80,7 @@ public class UserInterface {
         btnPrint.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // inner join enrollment, scores, subjects, courses. Print in actionListener
+                tpReports.setText(db.GetScores(comboBox3.getSelectedItem().toString()));
             }
         });
     }
