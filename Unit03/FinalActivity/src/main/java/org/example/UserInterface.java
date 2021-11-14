@@ -3,8 +3,10 @@ package org.example;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 
 public class UserInterface {
     private JTabbedPane tabbedPane1;
@@ -29,7 +31,7 @@ public class UserInterface {
     private JButton btnEnroll;
     private JLabel lblStudentE;
     private JLabel lblCourse;
-    private JComboBox comboBox3;
+    private JComboBox cbStudentId;
     private JTextPane tpReports;
     private JButton btnPrint;
     private JLabel lblStudentR;
@@ -39,6 +41,7 @@ public class UserInterface {
 
     public UserInterface() {
         UpdateCombo();
+        tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +85,28 @@ public class UserInterface {
         btnPrint.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tpReports.setText(db.GetScores(comboBox3.getSelectedItem().toString()));
+                String studentName = db.getData("SELECT firstname FROM student WHERE idcard = '" + cbStudentId.getSelectedItem().toString() + "'").get(0);
+                String studentSurname = db.getData("SELECT lastname FROM student WHERE idcard = '" + cbStudentId.getSelectedItem().toString() + "'").get(0);
+                String reportCardName =  studentName + "_" + studentSurname + "_ReportCard.txt";
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+                FileNameExtensionFilter txtFilter = new FileNameExtensionFilter("*.TXT", "txt");
+                fileChooser.setFileFilter(txtFilter);
+                fileChooser.setSelectedFile(new File(reportCardName));
+                int selection = fileChooser.showSaveDialog(new JFrame());
+
+                if (selection == JFileChooser.APPROVE_OPTION) {
+                    try {
+                        File reportCard = fileChooser.getSelectedFile();
+                        FileWriter fw = new FileWriter(reportCard);
+                        fw.write(db.GetScores(cbStudentId.getSelectedItem().toString()));
+                        fw.flush();
+                        fw.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         });
     }
@@ -91,7 +115,7 @@ public class UserInterface {
         cbStudent.removeAllItems();
         for (String StudentId: db.getData("SELECT idCard FROM student")) {
             cbStudent.addItem(StudentId);
-            comboBox3.addItem(StudentId);
+            cbStudentId.addItem(StudentId);
         }
         for (String courseName: db.getData("SELECT name FROM courses")) {
             cbCourse.addItem(courseName);
