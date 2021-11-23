@@ -60,8 +60,8 @@ public class Database {
             pstmt.executeUpdate();
             return 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return 1;
+            int errorCode = Integer.parseInt(e.getSQLState());
+            return errorCode;
         }
     }
 

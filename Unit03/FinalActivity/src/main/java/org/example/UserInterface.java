@@ -3,6 +3,8 @@ package org.example;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,15 +35,17 @@ public class UserInterface {
     private JLabel lblCourse;
     private JComboBox cbStudentId;
     private JTextPane tpReports;
-    private JButton btnPrint;
     private JLabel lblStudentR;
     private JButton btnImport;
     private JLabel lblStatus;
+    private JButton btnSave;
+    private JLabel lblError;
     private Database db = new Database();
 
     public UserInterface() {
         UpdateCombo();
         tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +59,7 @@ public class UserInterface {
                     if (!tfPhone.getText().isBlank()) {
                         student.setPhone(tfPhone.getText());
                     }
-                    if (db.addStudent(student) == 1)
+                    if (db.addStudent(student) == 23505)
                         lblStatus.setText("The student already exists.");
                     else
                         lblStatus.setText("Student added correctly.");
@@ -63,6 +67,7 @@ public class UserInterface {
                 UpdateCombo();
             }
         });
+
         btnEnroll.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,19 +75,19 @@ public class UserInterface {
                 String courseName = cbCourse.getSelectedItem().toString();
                 int courseCode = Integer.parseInt(db.getData("SELECT code FROM courses WHERE name = '" + courseName + "'").get(0));
                 if(db.getData("SELECT * FROM enrollment WHERE student = '" + studentId + "' AND course = " + courseCode).size() > 0) {
-                    // Error alumno ya matriculado
-                    System.out.println("error");
+                    lblStatus.setText("Student is already enrolled in this course.");
                 }
                 else if (Integer.parseInt(db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score <= 5 AND student = '" + studentId + "'").get(0)) > 0) {
-                     // Error asignaturas suspensas
-                    System.out.println("error");
+                     lblStatus.setText("Student hasn't passed all subjects in currently enrolled course.");
                 }
                 else {
                     db.enrollStudent(studentId, courseCode);
+                    lblStatus.setText("Student enrolled correctly.");
                 }
             }
         });
-        btnPrint.addActionListener(new ActionListener() {
+
+        btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String studentName = db.getData("SELECT firstname FROM student WHERE idcard = '" + cbStudentId.getSelectedItem().toString() + "'").get(0);
@@ -109,7 +114,22 @@ public class UserInterface {
                 }
             }
         });
+
+        tabbedPane1.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                lblStatus.setText("");
+            }
+        });
+
+        cbStudentId.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+            }
+        });
     }
+
     public void UpdateCombo() {
         cbCourse.removeAllItems();
         cbStudent.removeAllItems();
