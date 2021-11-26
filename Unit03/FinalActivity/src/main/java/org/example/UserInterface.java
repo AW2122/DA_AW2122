@@ -118,6 +118,7 @@ public class UserInterface {
         tabbedPane1.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                UpdateCombo();
                 lblStatus.setText("");
             }
         });
@@ -128,11 +129,18 @@ public class UserInterface {
                 tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
             }
         });
+        btnImport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
     public void UpdateCombo() {
         cbCourse.removeAllItems();
         cbStudent.removeAllItems();
+        cbStudentId.removeAllItems();
         for (String StudentId: db.getData("SELECT idCard FROM student")) {
             cbStudent.addItem(StudentId);
             cbStudentId.addItem(StudentId);

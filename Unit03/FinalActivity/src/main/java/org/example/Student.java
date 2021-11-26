@@ -7,6 +7,10 @@ public class Student {
     String email;
     String phone;
 
+    public Student() {
+
+    }
+
     public Student(String firstName, String lastName, String idCard) {
         this.firstName = firstName;
         this.lastName = lastName;
