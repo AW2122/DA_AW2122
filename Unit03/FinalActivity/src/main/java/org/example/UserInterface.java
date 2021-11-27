@@ -1,11 +1,15 @@
 package org.example;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -61,10 +65,12 @@ public class UserInterface {
                     }
                     if (db.addStudent(student) == 23505)
                         lblStatus.setText("The student already exists.");
-                    else
+                    else {
                         lblStatus.setText("Student added correctly.");
+                        tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+                        UpdateCombo();
+                    }
                 }
-                UpdateCombo();
             }
         });
 
@@ -123,16 +129,21 @@ public class UserInterface {
             }
         });
 
-        cbStudentId.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
-            }
-        });
         btnImport.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                try {
+                    SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
+                    XMLReader test = new XMLReader();
+                    saxParser.parse("xml.xml", test);
+                    System.out.println();
+                } catch (ParserConfigurationException ex) {
+                    ex.printStackTrace();
+                } catch (SAXException ex) {
+                    ex.printStackTrace();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
             }
         });
     }

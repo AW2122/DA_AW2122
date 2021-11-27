@@ -8,53 +8,51 @@ import java.util.ArrayList;
 
 public class XMLReader extends DefaultHandler {
     ArrayList<Student> studentList = new ArrayList<>();
+    ArrayList<Subject> subjectList = new ArrayList<>();
+    ArrayList<Course> courseList = new ArrayList<>();
+    protected boolean isSubject;
     protected Student student;
-    protected String studentId;
-    protected String courseId;
-    protected String courseName;
-    protected String subjectId;
-    protected String subjectCourse;
-    protected String subjectName;
-    protected String subjectHours;
-    protected String subjectYear;
-    protected boolean isFirstName = false;
-    protected boolean isLastName = false;
-    protected boolean isEmail = false;
-    protected boolean isPhone = false;
-    protected boolean isCourse = false;
+    protected Subject subject;
+    protected Course course;
+    protected String tagContent;
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (qName.equals("student")) {
             student = new Student();
-            studentId = attributes.getValue("id");
-        }
-        switch (qName) {
-            case "firstname":
-                isFirstName = true;
-                break;
-            case "lastname":
-                isLastName = true;
-                break;
-            case "email":
-                isEmail = true;
-                break;
-            case "phone":
-                isPhone = true;
-                break;
+            student.setIdCard(attributes.getValue("id"));
         }
         if (qName.equals("course")) {
-            courseId = attributes.getValue("id");
+            course = new Course();
+            course.setId(attributes.getValue("id"));
         }
         if (qName.equals("subject")) {
-            subjectId = attributes.getValue("id");
+            subject = new Subject();
+            isSubject = true;
+            subject.setId(attributes.getValue("id"));
+            subject.setCourseId(attributes.getValue("course"));
         }
+    }
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        tagContent = new String(ch, start, length);
     }
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        super.endElement(uri, localName, qName);
-    }
-
-    public void characters(char[] ch, int start, int length) throws SAXException {
-        super.characters(ch, start, length);
+        switch (qName) {
+            case "firstname": student.setFirstName(tagContent);break;
+            case "lastname": student.setLastName(tagContent);break;
+            case "email": student.setEmail(tagContent); break;
+            case "phone": student.setPhone(tagContent); break;
+            case "student": studentList.add(student); break;
+            case "hours": subject.setHours(tagContent); break;
+            case "year": subject.setYear(tagContent); break;
+            case "subject": subjectList.add(subject); break;
+            case "course": courseList.add(course); break;
+        }
+        if (qName.equals("name")) {
+            if (isSubject)
+                subject.setName(tagContent);
+            else
+                course.setName(tagContent);
+        }
     }
 }

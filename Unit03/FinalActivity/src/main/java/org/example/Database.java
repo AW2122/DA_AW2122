@@ -9,29 +9,6 @@ public class Database {
     static final String pwd = "0023";
     PreparedStatement pstmt = null;
 
-    /*
-    public ArrayList<String> getData(String table, int index, String condition, String column) {
-        ArrayList<String> idList = new ArrayList<>();
-        try {
-            Connection conn = DriverManager.getConnection(url, user, pwd);
-            if (condition.equals(""))
-                pstmt = conn.prepareStatement("SELECT * FROM " + table);
-            else {
-                pstmt = conn.prepareStatement("SELECT * FROM " + table + " WHERE " + column + " = ?");
-                pstmt.setString(1, condition);
-            }
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                idList.add(rs.getString(index));
-            }
-            return idList;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return idList;
-    }
-    */
-
     public ArrayList<String> getData(String sqlStatement) {
         ArrayList<String> idList = new ArrayList<>();
         try {
@@ -105,5 +82,9 @@ public class Database {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void XMLTransaction () {
+
     }
 }
