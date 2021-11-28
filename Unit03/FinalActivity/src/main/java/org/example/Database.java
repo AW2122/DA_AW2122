@@ -157,7 +157,6 @@ public class Database {
             return 0;
         } catch (SQLException e) {
             conn.rollback();
-            e.printStackTrace();
             int errorCode = Integer.parseInt(e.getSQLState());
             return errorCode;
         }

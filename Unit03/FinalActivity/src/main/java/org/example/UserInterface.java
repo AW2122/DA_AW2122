@@ -99,8 +99,8 @@ public class UserInterface {
                 if(db.getData("SELECT * FROM enrollment WHERE student = '" + studentId + "' AND course = " + courseCode).size() > 0) {
                     lblStatus.setText("Student is already enrolled in this course.");
                 }
-                else if (Integer.parseInt(db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score <= 5 AND student = '" + studentId + "'").get(0)) > 0) {
-                     lblStatus.setText("Student hasn't passed all subjects in currently enrolled course.");
+                else if (Integer.parseInt(db.getData("SELECT COUNT(*) FROM enrollment INNER JOIN scores s on enrollment.code = s.enrollmentid WHERE score < 5 AND student = '" + studentId + "'").get(0)) > 0) {
+                     lblStatus.setText("Student has not passed all the subjects in a currently enrolled course.");
                 }
                 else {
                     db.enrollStudent(studentId, courseCode);
