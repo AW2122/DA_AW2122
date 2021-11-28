@@ -9,6 +9,11 @@ public class Database {
     static final String pwd = "0023";
     PreparedStatement pstmt = null;
 
+    /**
+     * This method retrieves data from that database and stores them in a list.
+     * @param sqlStatement the SQL statement that you wish to execute (should be a SELECT).
+     * @return an arraylist of type String.
+     */
     public ArrayList<String> getData(String sqlStatement) {
         ArrayList<String> idList = new ArrayList<>();
         try {
@@ -25,7 +30,14 @@ public class Database {
         return idList;
     }
 
-    private void InsertStudent(Connection conn, Student student) throws SQLException {
+    /**
+     * This method creates a prepared statement to insert a student into the database.
+     * @param conn recives a connection that has already been established (this is to ensure that the method
+     *             XMLTransaction is executed as a whole using a single connection).
+     * @param student the object Student to be inserted.
+     * @throws SQLException
+     */
+    private void insertStudent(Connection conn, Student student) throws SQLException {
         pstmt = conn.prepareStatement("INSERT INTO student (firstname, lastname, idcard, email, phone) VALUES (?, ?, ?, ?, ?)");
         pstmt.setString(1, student.getFirstName());
         pstmt.setString(2, student.getLastName());
@@ -35,10 +47,15 @@ public class Database {
         pstmt.executeUpdate();
     }
 
+    /**
+     * This method creates a connection to insert a student, calling the method InsertStudent.
+     * @param student object Student.
+     * @return the SQL error code if the execution were to fail and 0 if there are no issues.
+     */
     public int addStudent(Student student) {
         try {
             Connection conn = DriverManager.getConnection(url, user, pwd);
-            InsertStudent(conn, student);
+            insertStudent(conn, student);
             conn.close();
             return 0;
         } catch (SQLException e) {
@@ -48,9 +65,9 @@ public class Database {
     }
 
     /**
-     * This method
-     * @param studentId
-     * @param courseCode
+     * This method executes a query that inserts the specified student into a specific course.
+     * @param studentId the id code of the student to enroll.
+     * @param courseCode the course in which the student will be enrolled.
      */
     public void enrollStudent(String studentId, int courseCode) {
         try {
@@ -80,9 +97,9 @@ public class Database {
      * This method executes a select query to obtain a specific student's scores,
      * with its corresponding course and subject name.
      * @param studentId is the identification code of the student, of type String
-     * @return a String containing the select query result
+     * @return a String containing the select query result.
      */
-    public String GetScores (String studentId) {
+    public String getScores(String studentId) {
         try {
             String result = "";
             Connection conn = DriverManager.getConnection(url, user, pwd);
@@ -111,14 +128,14 @@ public class Database {
      * @return an integer: 0 if transaction is successful, SQL error code otherwise.
      * @throws SQLException
      */
-    public int XMLTransaction (ArrayList<Student> studentList, ArrayList<Course> courseList,
-                                ArrayList<Subject> subjectList) throws SQLException {
+    public int xmlTransaction(ArrayList<Student> studentList, ArrayList<Course> courseList,
+                              ArrayList<Subject> subjectList) throws SQLException {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, pwd);
             conn.setAutoCommit(false);
             for (Student student: studentList) {
-                InsertStudent(conn, student);
+                insertStudent(conn, student);
             }
             for (Course course: courseList) {
                 pstmt = conn.prepareStatement("INSERT INTO courses (code, name) VALUES (?, ?)");

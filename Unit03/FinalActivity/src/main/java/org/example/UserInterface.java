@@ -1,7 +1,6 @@
 package org.example;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -50,32 +49,47 @@ public class UserInterface {
 
     public UserInterface() {
         UpdateCombo();
-        tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+        if (cbStudentId.getSelectedItem() != null)
+            tpReports.setText(db.getScores(cbStudentId.getSelectedItem().toString()));
 
+        /**
+         * When the Add Student (btnAdd) button is clicked, a new instance of Student is created and added to the
+         * database using the addStudent method.
+         */
         btnAdd.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Checks if any of the required fields are empty
                 if (tfFirstName.getText().isBlank() || tfLastName.getText().isBlank() || tfIdCard.getText().isBlank())
                     lblStatus.setText("Some important fields are missing.");
                 else {
+                    // If the required fields are correct the Student constructor is called
                     Student student = new Student(tfFirstName.getText(), tfLastName.getText(), tfIdCard.getText());
+                    // If any of the non required fields are filled in, they're assigned to the class' corresponding
+                    // attribute
                     if (!tfMail.getText().isBlank()) {
                         student.setPhone(tfMail.getText());
                     }
                     if (!tfPhone.getText().isBlank()) {
                         student.setPhone(tfPhone.getText());
                     }
+                    // If there's a duplicate primary key, it displays an error text in the status label
                     if (db.addStudent(student) == 23505)
                         lblStatus.setText("The student already exists.");
+                    // If everything went well the comboboxes are updated and the status label displays a new message
                     else {
                         lblStatus.setText("Student added correctly.");
-                        tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+                        tpReports.setText(db.getScores(cbStudentId.getSelectedItem().toString()));
                         UpdateCombo();
                     }
                 }
             }
         });
-
+        /**
+         * The enroll button (btnEnroll) when clicked gets the selected values in the comboboxes of the Enrollment pane,
+         * gets the course code with a select from the database (course name has unique constraint). It checks wether
+         * the student is already enrolled in the course and if the student has passed all the subjects in another course.
+         */
         btnEnroll.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -94,7 +108,10 @@ public class UserInterface {
                 }
             }
         });
-
+        /**
+         * When the Save button (btnSave) is clicked the getScores method is called to retrieve a specific student's
+         * scores and writes them in a .txt file.
+         */
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,10 +127,20 @@ public class UserInterface {
                 if (selection == JFileChooser.APPROVE_OPTION) {
                     try {
                         File reportCard = fileChooser.getSelectedFile();
-                        FileWriter fw = new FileWriter(reportCard);
-                        fw.write(db.GetScores(cbStudentId.getSelectedItem().toString()));
-                        fw.flush();
-                        fw.close();
+                        Boolean save = true;
+                        if (reportCard.exists()) {
+                            if (JOptionPane.showConfirmDialog(fileChooser,
+                                    "This file already exists. Do you wish to overwrite it?", "Overwrite",
+                                    JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION) {
+                               save = false;
+                            }
+                        }
+                        if (save) {
+                            FileWriter fw = new FileWriter(reportCard);
+                            fw.write(db.getScores(cbStudentId.getSelectedItem().toString()));
+                            fw.flush();
+                            fw.close();
+                        }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -121,14 +148,12 @@ public class UserInterface {
             }
         });
 
-        tabbedPane1.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                UpdateCombo();
-                lblStatus.setText("");
-            }
-        });
-
+        /**
+         * When the Import XML button (btnImport) is clicked it creates an instance of SAXParser and XMLReader,
+         * lets the user choose a XML file to import, calls the xmlTransaction method and passes the lists it
+         * obtains from XMLReader. With this, students, courses and subjects found in the XML file will be added to
+         * the database.
+         */
         btnImport.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -141,11 +166,11 @@ public class UserInterface {
                     if (selection == JFileChooser.APPROVE_OPTION) {
                         File selectedFile = fileChooser.getSelectedFile();
                         saxParser.parse(selectedFile, xmlReader);
-                        if (db.XMLTransaction(xmlReader.getStudentList(), xmlReader.getCourseList(), xmlReader.getSubjectList()) == 23505) {
-                            lblStatus.setText("XML import failed. Duplicate key value detected.");
-                        }
+                        if (db.xmlTransaction(xmlReader.getStudentList(), xmlReader.getCourseList(),
+                                xmlReader.getSubjectList()) == 0)
+                            lblStatus.setText("XML data imported successfully.");
                         else
-                            lblStatus.setText("XML data imported correctly.");
+                            lblStatus.setText("XML import failed.");
                     }
                 } catch (ParserConfigurationException | SQLException | SAXException ex ) {
                     lblStatus.setText("XML import failed.");
@@ -154,17 +179,33 @@ public class UserInterface {
                 }
             }
         });
+        /**
+         * Updates the textPane when the combobox value changes
+         */
         cbStudentId.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (cbStudentId.getSelectedItem() != null)
-                    tpReports.setText(db.GetScores(cbStudentId.getSelectedItem().toString()));
+                    tpReports.setText(db.getScores(cbStudentId.getSelectedItem().toString()));
                 else
                     UpdateCombo();
             }
         });
+        /**
+         * Updates the comboboxes and the status label everytime there's a pane change
+         */
+        tabbedPane1.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                UpdateCombo();
+                lblStatus.setText("");
+            }
+        });
     }
 
+    /**
+     * This method updates the comboboxes using DefaultComboBoxModel
+     */
     public void UpdateCombo() {
         DefaultComboBoxModel studentComboBoxModel = new DefaultComboBoxModel();
         DefaultComboBoxModel courseComboBoxModel = new DefaultComboBoxModel();

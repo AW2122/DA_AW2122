@@ -16,6 +16,10 @@ public class XMLReader extends DefaultHandler {
     protected Course course;
     protected String tagContent;
 
+    /**
+     * Getters for the object lists so that they can be accessed by other classes.
+     * @return the different object lists.
+     */
     public ArrayList<Student> getStudentList() {
         return studentList;
     }
@@ -28,6 +32,14 @@ public class XMLReader extends DefaultHandler {
         return courseList;
     }
 
+    /**
+     * This method reads the opening tags in the XML file.
+     * @param uri
+     * @param localName
+     * @param qName the XML tag names.
+     * @param attributes
+     * @throws SAXException
+     */
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (qName.equals("student")) {
             student = new Student();
@@ -44,10 +56,26 @@ public class XMLReader extends DefaultHandler {
             subject.setCourseId(Integer.parseInt(attributes.getValue("course")));
         }
     }
+
+    /**
+     * Creates a string with the current tag's content.
+     * @param ch
+     * @param start
+     * @param length
+     * @throws SAXException
+     */
     public void characters(char[] ch, int start, int length) throws SAXException {
         tagContent = new String(ch, start, length);
     }
 
+    /**
+     * This method reads the closing tags and when they match the switch cases it adds the value of tagContent to the
+     * specified object attribute or adds an object to its corresponding list.
+     * @param uri
+     * @param localName
+     * @param qName
+     * @throws SAXException
+     */
     public void endElement(String uri, String localName, String qName) throws SAXException {
         switch (qName) {
             case "firstname": student.setFirstName(tagContent);break;
