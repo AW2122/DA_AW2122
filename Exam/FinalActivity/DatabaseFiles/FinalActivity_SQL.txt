@@ -1,0 +1,44 @@
+CREATE TABLE student (
+	firstName VARCHAR(30),
+	lastName VARCHAR(30),
+	idCard VARCHAR(9) PRIMARY KEY,
+	email VARCHAR(30),
+	phone VARCHAR(12)
+);
+
+CREATE TABLE courses (
+	code INT PRIMARY KEY,
+	name VARCHAR (40) UNIQUE
+);
+
+CREATE TABLE enrollment (
+	code SERIAL PRIMARY KEY,
+	student VARCHAR(9),
+	course INT,
+	FOREIGN KEY (student)
+		REFERENCES student (idCard),
+	FOREIGN KEY (course)
+		REFERENCES courses (code)
+);
+
+CREATE TABLE subjects (
+	code INT PRIMARY KEY,
+	name VARCHAR (20),
+	year INT,
+	hours INT,
+	course INT,
+	FOREIGN KEY (course)
+		REFERENCES courses (code)
+);
+
+CREATE TABLE scores (
+	enrollmentId INT NOT NULL,
+	subjectId INT NOT NULL,
+	score INT,
+	PRIMARY KEY (enrollmentId, subjectId),
+	FOREIGN KEY (enrollmentId)
+		REFERENCES enrollment (code),
+	FOREIGN KEY (subjectId)
+		REFERENCES subjects (code)
+);
+
