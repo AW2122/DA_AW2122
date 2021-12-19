@@ -1,0 +1,297 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.0
+-- Dumped by pg_dump version 14.0
+
+-- Started on 2021-12-19 20:22:09
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3336 (class 1262 OID 16403)
+-- Name: Employees; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "Employees" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'English_United Kingdom.1252';
+
+
+ALTER DATABASE "Employees" OWNER TO postgres;
+
+\connect "Employees"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 833 (class 1247 OID 16545)
+-- Name: job; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.job AS ENUM (
+    'CLERK',
+    'SALESMAN',
+    'MANAGER',
+    'ANALYST',
+    'PRESIDENT'
+);
+
+
+ALTER TYPE public.job OWNER TO postgres;
+
+--
+-- TOC entry 842 (class 1247 OID 16572)
+-- Name: materialtypes; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.materialtypes AS ENUM (
+    'iron',
+    'bronze',
+    'marble'
+);
+
+
+ALTER TYPE public.materialtypes OWNER TO postgres;
+
+--
+-- TOC entry 839 (class 1247 OID 16564)
+-- Name: paintingtypes; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.paintingtypes AS ENUM (
+    'oilPainting',
+    'watercolour',
+    'pastel'
+);
+
+
+ALTER TYPE public.paintingtypes OWNER TO postgres;
+
+--
+-- TOC entry 836 (class 1247 OID 16556)
+-- Name: styles; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.styles AS ENUM (
+    'grecoRoman',
+    'neoClassic',
+    'cubism'
+);
+
+
+ALTER TYPE public.styles OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 16586)
+-- Name: departmentnum; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.departmentnum
+    START WITH 10
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.departmentnum OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 209 (class 1259 OID 16404)
+-- Name: dept; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.dept (
+    deptno integer DEFAULT nextval('public.departmentnum'::regclass) NOT NULL,
+    dname character varying(14),
+    loc character varying(13)
+);
+
+
+ALTER TABLE public.dept OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1255 OID 16438)
+-- Name: departmentsearch(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.departmentsearch(deptname character varying) RETURNS SETOF public.dept
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	department dept;
+BEGIN
+	FOR department IN
+	SELECT *
+	  FROM dept
+	 WHERE UPPER(dname) = UPPER(deptname)
+	  LOOP
+	  	RETURN NEXT department;
+	  END LOOP;
+END;
+$$;
+
+
+ALTER FUNCTION public.departmentsearch(deptname character varying) OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 16409)
+-- Name: employee; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.employee (
+    empno integer NOT NULL,
+    ename character varying(10),
+    job public.job,
+    deptno integer
+);
+
+
+ALTER TABLE public.employee OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1255 OID 16436)
+-- Name: employeelist(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.employeelist(jobname character varying) RETURNS SETOF public.employee
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	empl employee;
+BEGIN
+	FOR empl IN 
+	SELECT *
+	  FROM employee 
+	 WHERE UPPER(job) = UPPER(jobname) 
+    	  LOOP
+		RETURN NEXT empl;
+	   END LOOP;
+END;
+$$;
+
+
+ALTER FUNCTION public.employeelist(jobname character varying) OWNER TO postgres;
+
+--
+-- TOC entry 213 (class 1255 OID 16444)
+-- Name: namepattern(character varying); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.namepattern(pattern character varying) RETURNS SETOF public.employee
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	empl employee;
+BEGIN	
+	FOR empl IN
+	SELECT *
+	  FROM employee
+	 WHERE UPPER(ename) LIKE UPPER(CONCAT(pattern, '%'))
+	  LOOP
+	  	RETURN NEXT empl;
+	   END LOOP;
+END;
+$$;
+
+
+ALTER FUNCTION public.namepattern(pattern character varying) OWNER TO postgres;
+
+--
+-- TOC entry 3328 (class 0 OID 16404)
+-- Dependencies: 209
+-- Data for Name: dept; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.dept (deptno, dname, loc) VALUES (10, 'ACCOUNTING', 'NEW YORK');
+INSERT INTO public.dept (deptno, dname, loc) VALUES (20, 'RESEARCH', 'DALLAS');
+INSERT INTO public.dept (deptno, dname, loc) VALUES (30, 'SALES', 'CHICAGO');
+INSERT INTO public.dept (deptno, dname, loc) VALUES (40, 'OPERATIONS', 'BOSTON');
+
+
+--
+-- TOC entry 3329 (class 0 OID 16409)
+-- Dependencies: 210
+-- Data for Name: employee; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7369, 'SMITH', 'CLERK', 20);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7499, 'ALLEN', 'SALESMAN', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7521, 'WARD', 'SALESMAN', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7566, 'JONES', 'MANAGER', 20);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7654, 'MARTIN', 'SALESMAN', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7698, 'BLAKE', 'MANAGER', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7782, 'CLARK', 'MANAGER', 10);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7788, 'SCOTT', 'ANALYST', 20);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7839, 'KING', 'PRESIDENT', 10);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7844, 'TURNER', 'SALESMAN', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7876, 'ADAMS', 'CLERK', 20);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7900, 'JAMES', 'CLERK', 30);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7902, 'FORD', 'ANALYST', 20);
+INSERT INTO public.employee (empno, ename, job, deptno) VALUES (7934, 'MILLER', 'CLERK', 10);
+
+
+--
+-- TOC entry 3337 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: departmentnum; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.departmentnum', 10, false);
+
+
+--
+-- TOC entry 3185 (class 2606 OID 16408)
+-- Name: dept dept_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dept
+    ADD CONSTRAINT dept_pkey PRIMARY KEY (deptno);
+
+
+--
+-- TOC entry 3187 (class 2606 OID 16413)
+-- Name: employee employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employee
+    ADD CONSTRAINT employee_pkey PRIMARY KEY (empno);
+
+
+--
+-- TOC entry 3188 (class 2606 OID 16414)
+-- Name: employee fk_employee_dpt; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employee
+    ADD CONSTRAINT fk_employee_dpt FOREIGN KEY (deptno) REFERENCES public.dept(deptno);
+
+
+-- Completed on 2021-12-19 20:22:10
+
+--
+-- PostgreSQL database dump complete
+--
+
