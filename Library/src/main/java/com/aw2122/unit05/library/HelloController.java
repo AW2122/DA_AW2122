@@ -1,5 +1,7 @@
 package com.aw2122.unit05.library;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -67,7 +69,7 @@ public class HelloController {
         setGridVisibility();
         borrowMenu.setVisible(true);
     }
-    
+
     @FXML
     void onReturnButtonClick(MouseEvent event) {
         setGridVisibility();
@@ -92,10 +94,8 @@ public class HelloController {
 
     @FXML
     void onExitButtonClick(MouseEvent event) {
-
+        Platform.exit();
     }
-
-
 
     @FXML
     void onSearchButtonClick(KeyEvent event) {
