@@ -6,13 +6,16 @@
   <session-factory>
     <property name="connection.url">jdbc:postgresql://localhost:5432/Library</property>
     <property name="connection.driver_class">org.postgresql.Driver</property>
+    <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     <property name="connection.username">postgres</property>
     <property name="connection.password">0023</property>
-    <mapping class="com.aw2122.unit05.BooksEntity"/>
-    <mapping class="com.aw2122.unit05.LendingEntity"/>
-    <mapping class="com.aw2122.unit05.ReservationsEntity"/>
-    <mapping class="com.aw2122.unit05.UsersEntity"/>
-    <mapping class="com.aw2122.unit05.DatabaseController"/>
+      <mapping class="com.aw2122.finalactivity.library.BooksEntity"/>
+      <mapping class="com.aw2122.finalactivity.library.LendingEntity"/>
+      <mapping class="com.aw2122.finalactivity.library.ReservationsEntity"/>
+      <mapping class="com.aw2122.finalactivity.library.UsersEntity"/>
+      <!-- <property name="connection.username"/> -->
+    <!-- <property name="connection.password"/> -->
+
     <!-- DB schema will be updated if needed -->
     <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
   </session-factory>

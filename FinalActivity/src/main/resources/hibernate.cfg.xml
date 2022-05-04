@@ -9,11 +9,11 @@
     <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     <property name="connection.username">postgres</property>
     <property name="connection.password">0023</property>
-      <mapping class="com.aw2122.unit05.BooksEntity"/>
-      <mapping class="com.aw2122.unit05.LendingEntity"/>
-      <mapping class="com.aw2122.unit05.ReservationsEntity"/>
-      <mapping class="com.aw2122.unit05.UsersEntity"/>
-      <!-- <property name="connection.username"/> -->
+    <mapping class="com.aw2122.finalactivity.library.BooksEntity"/>
+    <mapping class="com.aw2122.finalactivity.library.LendingEntity"/>
+    <mapping class="com.aw2122.finalactivity.library.ReservationsEntity"/>
+    <mapping class="com.aw2122.finalactivity.library.UsersEntity"/>
+    <!-- <property name="connection.username"/> -->
     <!-- <property name="connection.password"/> -->
 
     <!-- DB schema will be updated if needed -->

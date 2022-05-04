@@ -8,6 +8,7 @@ module com.aw2122.unit05.library {
     requires org.hibernate.orm.core;
 
 
-    opens com.aw2122.unit05.library to javafx.fxml;
-    exports com.aw2122.unit05.library;
+    opens com.aw2122.unit05 to javafx.fxml;
+    exports com.aw2122.unit05;
+
 }
