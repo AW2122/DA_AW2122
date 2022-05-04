@@ -1,14 +1,18 @@
 package com.aw2122.unit05.library;
 
-import javafx.application.Application;
+import com.aw2122.unit05.DatabaseController;
+import com.aw2122.unit05.UsersEntity;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
 public class HelloController {
+
+    DatabaseController db = new DatabaseController();
 
     @FXML
     private ImageView addButton;
@@ -53,38 +57,47 @@ public class HelloController {
     private GridPane topPanel;
 
     @FXML
+    private TextField txtCode;
+
+    @FXML
     private ImageView userButton;
 
     @FXML
     private GridPane userMenu;
 
     @FXML
+    void onUserButtonClick(MouseEvent event) {
+        setMainGridVisibility(1);
+
+    }
+
+    @FXML
     void onBookButtonClick(MouseEvent event) {
-        setGridVisibility();
-        bookMenu.setVisible(true);
+        setMainGridVisibility(2);
+
     }
 
     @FXML
     void onBorrowButtonClick(MouseEvent event) {
-        setGridVisibility();
-        borrowMenu.setVisible(true);
+        setMainGridVisibility(3);
+
     }
 
     @FXML
     void onReturnButtonClick(MouseEvent event) {
-        setGridVisibility();
-        returnMenu.setVisible(true);
-    }
+        setMainGridVisibility(4);
 
-    @FXML
-    void onUserButtonClick(MouseEvent event) {
-        setGridVisibility();
-        userMenu.setVisible(true);
     }
 
     @FXML
     void onAddButtonClicked(KeyEvent event) {
+        /*UsersEntity user = new UsersEntity();
+        user.setCode(txtCode.getText());
+        user.setName();
+        user.setSurname();
+        user.setBirthdate();
 
+        db.InsertUsers(user);*/
     }
 
     @FXML
@@ -93,22 +106,37 @@ public class HelloController {
     }
 
     @FXML
-    void onExitButtonClick(MouseEvent event) {
-        Platform.exit();
-    }
-
-    @FXML
     void onSearchButtonClick(KeyEvent event) {
 
     }
 
+    @FXML
+    void onExitButtonClick(MouseEvent event) {
+        Platform.exit();
+    }
 
-
-    void setGridVisibility() {
+    void setMainGridVisibility(int menuValue) {
         // pasarle un numero para que active la pesataña segun el numero
         userMenu.setVisible(false);
         bookMenu.setVisible(false);
         borrowMenu.setVisible(false);
         returnMenu.setVisible(false);
+
+        bottomPanelMenu.setVisible(false);
+        bottomSaveCancel.setVisible(false);
+        bottomPanelAdd.setVisible(false);
+
+        switch (menuValue) {
+            case 2 -> bookMenu.setVisible(true);
+            case 3 -> borrowMenu.setVisible(true);
+            case 4 -> returnMenu.setVisible(true);
+            default -> userMenu.setVisible(true);
+        }
+        switch (menuValue) {
+            case 3, 4 -> bottomPanelAdd.setVisible(true);
+            default -> bottomPanelMenu.setVisible(true);
+        }
     }
+
+    // Incluir booleanos para control de pestañas
 }

@@ -1,5 +1,6 @@
 package com.aw2122.unit05.library;
 
+import com.aw2122.unit05.DatabaseController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,6 +19,9 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
+        DatabaseController db = new DatabaseController();
+        db.GetData("c001");
         launch();
+
     }
 }

@@ -12,6 +12,7 @@
     <mapping class="com.aw2122.unit05.LendingEntity"/>
     <mapping class="com.aw2122.unit05.ReservationsEntity"/>
     <mapping class="com.aw2122.unit05.UsersEntity"/>
+    <mapping class="com.aw2122.unit05.DatabaseController"/>
     <!-- DB schema will be updated if needed -->
     <!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
   </session-factory>
