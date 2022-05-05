@@ -2,26 +2,35 @@ package com.aw2122.finalactivity.library;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.lang.reflect.Method;
+import java.util.List;
 
-public class HibernateCRUD {
+public class HibernateCRUD<T> {
     protected SessionFactory sessionFactory;
-    private final Class entity;
+    protected String entity;
 
-    public <T> HibernateCRUD(T t) {
-        this.entity = t.getClass();
+    public HibernateCRUD(T entity, SessionFactory sessionFactory) {
+        this.entity = entity.getClass().getName();
+        this.sessionFactory = sessionFactory;
     }
 
-    public <T> void GetData(String code, String dataName) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<T> query = session.createQuery("from com.aw2122.finalactivity.library.UsersEntity where code = :code");
-            query.setParameter(code, code);
-            Method method = entity.getClass().getMethod(dataName, null);
+    public List<T> GetData(String searchParameter, String fieldName) throws Exception {
+        Query<T> query;
+        List<T> list;
+        Session session = sessionFactory.openSession();
+        query = session.createQuery("from " + entity + " where " + fieldName + " like " + "('%" + searchParameter + "%')");
+        list = query.getResultList();
+        session.close();
+        return list;
+    }
 
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+    public void InsertObject(Object t) throws Exception {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(t);
+        transaction.commit();
+        session.close();
     }
 }

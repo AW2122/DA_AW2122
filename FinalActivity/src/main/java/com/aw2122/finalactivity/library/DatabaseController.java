@@ -12,20 +12,29 @@ import java.util.List;
 
 public class DatabaseController {
         protected SessionFactory sessionFactory;
+        protected HibernateCRUD<UsersEntity> userCRUD = null;
         public DatabaseController() {
                 sessionFactory = new Configuration().configure().buildSessionFactory();
+                userCRUD = new HibernateCRUD<>(new UsersEntity(), sessionFactory);
         }
 
-        public void InsertUsers(UsersEntity user) {
-                try (Session session = sessionFactory.openSession()) {
-                        Transaction transaction = session.beginTransaction();
-                        session.save(user);
-                        transaction.commit();
+
+        public void GetUser(String searchParameter, String fieldName) {
+                try {
+                        System.out.println(userCRUD.GetData("c001", "code").get(0).getName());
+
                 } catch (Exception e) {
-                        System.out.println();
+                        e.printStackTrace();
                 }
         }
 
+        public void InsertUser(Object obj) {
+                try {
+                        userCRUD.InsertObject(obj);
 
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+        }
 
 }

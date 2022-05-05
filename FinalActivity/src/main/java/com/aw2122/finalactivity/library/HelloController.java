@@ -2,6 +2,7 @@ package com.aw2122.finalactivity.library;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -58,6 +59,15 @@ public class HelloController {
     private TextField txtCode;
 
     @FXML
+    private TextField txtName;
+
+    @FXML
+    private TextField txtSurname;
+
+    @FXML
+    private DatePicker dpBirthdate;
+
+    @FXML
     private ImageView userButton;
 
     @FXML
@@ -88,7 +98,7 @@ public class HelloController {
     }
 
     @FXML
-    void onAddButtonClicked(KeyEvent event) {
+    void onAddButtonClicked(MouseEvent event) {
         /*UsersEntity user = new UsersEntity();
         user.setCode(txtCode.getText());
         user.setName();
@@ -96,6 +106,12 @@ public class HelloController {
         user.setBirthdate();
 
         db.InsertUsers(user);*/
+        UsersEntity user = new UsersEntity();
+        user.setCode(txtCode.getText());
+        user.setName(txtName.getText());
+        user.setSurname(txtSurname.getText());
+        //user.setBirthdate(dpBirthdate.getValue().);
+        db.InsertUser(user);
     }
 
     @FXML
@@ -104,8 +120,8 @@ public class HelloController {
     }
 
     @FXML
-    void onSearchButtonClick(KeyEvent event) {
-
+    void onSearchButtonClick(MouseEvent event) {
+        //db.GetUser("","");
     }
 
     @FXML
