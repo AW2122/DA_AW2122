@@ -13,11 +13,16 @@ import java.util.List;
 public class DatabaseController {
         protected SessionFactory sessionFactory;
         protected HibernateCRUD<UsersEntity> userCRUD = null;
+        protected HibernateCRUD<BooksEntity> bookCRUD = null;
         public DatabaseController() {
                 sessionFactory = new Configuration().configure().buildSessionFactory();
                 userCRUD = new HibernateCRUD<>(new UsersEntity(), sessionFactory);
+                bookCRUD = new HibernateCRUD<>(new BooksEntity(), sessionFactory);
         }
 
+        /*public Class GetClass() {
+                if
+        }*/
 
         public void GetUser(String searchParameter, String fieldName) {
                 try {
@@ -28,9 +33,14 @@ public class DatabaseController {
                 }
         }
 
-        public void InsertUser(Object obj) {
+        public void Insert(Object obj) {
                 try {
-                        userCRUD.InsertObject(obj);
+                        if (obj.getClass().getName().equals("UsersEntity")) {
+                                userCRUD.InsertObject(obj);
+                        }
+                        else  {
+                                bookCRUD.InsertObject(obj);
+                        }
 
                 } catch (Exception e) {
                         e.printStackTrace();

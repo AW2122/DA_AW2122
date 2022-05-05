@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aw2122.finalactivity.library.HelloController">
+<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aw2122.finalactivity.library.HelloController">
     <children>
         <GridPane fx:id="topPanel" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -154,7 +161,7 @@
                 <Insets left="20.0" right="20.0" />
             </padding>
         </GridPane>
-        <GridPane fx:id="bookMenu" layoutY="84.0" prefHeight="379.0" prefWidth="536.0" style="-fx-background-color: #1177dd;" visible="false" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
+        <GridPane fx:id="bookMenu" layoutY="84.0" prefHeight="379.0" prefWidth="536.0" style="-fx-background-color: #1177dd;" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" percentWidth="0.0" prefWidth="92.0" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="418.00000762939453" minWidth="10.0" prefWidth="418.00000762939453" />
@@ -173,7 +180,7 @@
                         <Insets left="20.0" />
                     </padding>
                 </Label>
-                <TextField prefHeight="25.0" prefWidth="239.0" GridPane.columnIndex="1" />
+                <TextField fx:id="txtIsbn" prefHeight="25.0" prefWidth="239.0" GridPane.columnIndex="1" />
                 <Label alignment="CENTER" text="Title" GridPane.rowIndex="1">
                     <opaqueInsets>
                         <Insets />
@@ -192,21 +199,21 @@
                         <Insets left="20.0" />
                     </padding>
                 </Label>
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Slider majorTickUnit="1.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="txtTitle" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Slider fx:id="copiesSlider" majorTickUnit="1.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <Label text="Cover" GridPane.rowIndex="3">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
                 </Label>
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <TextField fx:id="txtCover" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <TextField fx:id="txtOutline" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <Label text="Outline" GridPane.rowIndex="4">
                     <padding>
                         <Insets left="20.0" />
                     </padding>
                 </Label>
-                <TextField GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <TextField fx:id="txtPubillsher" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </children>
             <padding>
                 <Insets left="20.0" right="20.0" />

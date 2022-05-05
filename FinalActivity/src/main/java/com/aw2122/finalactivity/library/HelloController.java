@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.control.Slider;
 
 public class HelloController {
 
@@ -38,6 +39,12 @@ public class HelloController {
     private GridPane bottomSaveCancel;
 
     @FXML
+    private Slider copiesSlider;
+
+    @FXML
+    private DatePicker dpBirthdate;
+
+    @FXML
     private ImageView editButton;
 
     @FXML
@@ -59,13 +66,25 @@ public class HelloController {
     private TextField txtCode;
 
     @FXML
+    private TextField txtCover;
+
+    @FXML
+    private TextField txtIsbn;
+
+    @FXML
     private TextField txtName;
+
+    @FXML
+    private TextField txtOutline;
+
+    @FXML
+    private TextField txtPubillsher;
 
     @FXML
     private TextField txtSurname;
 
     @FXML
-    private DatePicker dpBirthdate;
+    private TextField txtTitle;
 
     @FXML
     private ImageView userButton;
@@ -99,19 +118,26 @@ public class HelloController {
 
     @FXML
     void onAddButtonClicked(MouseEvent event) {
-        /*UsersEntity user = new UsersEntity();
-        user.setCode(txtCode.getText());
-        user.setName();
-        user.setSurname();
-        user.setBirthdate();
+        if (userMenu.isVisible()) {
+            UsersEntity user = new UsersEntity();
+            user.setCode(txtCode.getText());
+            user.setName(txtName.getText());
+            user.setSurname(txtSurname.getText());
+            //user.setBirthdate(dpBirthdate.getValue().);
+            db.Insert(user);
+        }
 
-        db.InsertUsers(user);*/
-        UsersEntity user = new UsersEntity();
-        user.setCode(txtCode.getText());
-        user.setName(txtName.getText());
-        user.setSurname(txtSurname.getText());
-        //user.setBirthdate(dpBirthdate.getValue().);
-        db.InsertUser(user);
+        if (bookMenu.isVisible()) {
+            BooksEntity book = new BooksEntity();
+            book.setIsbn(txtIsbn.getText());
+            book.setTitle(txtTitle.getText());
+            book.setCopies((int) copiesSlider.getValue());
+            book.setCover(txtCover.getText());
+            book.setOutline(txtOutline.getText());
+            book.setPublisher(txtPubillsher.getText());
+            db.Insert(book);
+        }
+
     }
 
     @FXML
