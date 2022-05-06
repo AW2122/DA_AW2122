@@ -10,6 +10,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Slider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HelloController {
 
     DatabaseController db = new DatabaseController();
@@ -147,7 +150,15 @@ public class HelloController {
 
     @FXML
     void onSearchButtonClick(MouseEvent event) {
-        //db.GetUser("","");
+        List<Object> result = new ArrayList<>();
+        result = db.GetUser("c001","code");
+        if (result.size() > 1) {
+            // Alertdialog o lo que sea para elegir el usuario a mostrar
+        }
+        UsersEntity user = (UsersEntity) result.get(0);
+        txtCode.setText(user.getCode());
+        txtName.setText(user.getName());
+        txtSurname.setText(user.getSurname());
     }
 
     @FXML
@@ -157,6 +168,7 @@ public class HelloController {
 
     void setMainGridVisibility(int menuValue) {
         // pasarle un numero para que active la pesataña segun el numero
+        // enum para el menu
         userMenu.setVisible(false);
         bookMenu.setVisible(false);
         borrowMenu.setVisible(false);
@@ -177,6 +189,5 @@ public class HelloController {
             default -> bottomPanelMenu.setVisible(true);
         }
     }
-
     // Incluir booleanos para control de pestañas
 }
