@@ -33,4 +33,12 @@ public class HibernateCRUD<T> {
         transaction.commit();
         session.close();
     }
+
+    public void UpdateObject(Object t) throws Exception {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.update(t);
+        transaction.commit();
+        session.close();
+    }
 }

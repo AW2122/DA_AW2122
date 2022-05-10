@@ -10,12 +10,19 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Slider;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HelloController {
 
     DatabaseController db = new DatabaseController();
+    Boolean userMenuVisible = true;
+    Boolean bookMenuVisible = false;
+    Boolean isEditing = false;
+    Boolean isAdding = false;
+    Boolean isSearching = false;
+    Boolean isReading = false;
 
     @FXML
     private ImageView addButton;
@@ -126,7 +133,9 @@ public class HelloController {
             user.setCode(txtCode.getText());
             user.setName(txtName.getText());
             user.setSurname(txtSurname.getText());
-            //user.setBirthdate(dpBirthdate.getValue().);
+            if (dpBirthdate.getValue() != null) {
+                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+            }
             db.Insert(user);
         }
 
@@ -145,13 +154,21 @@ public class HelloController {
 
     @FXML
     void onEditButtonClicked(KeyEvent event) {
-
+        isEditing = true;
+        if (userMenu.isVisible()) {
+            UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
+            user.setName(txtName.getText());
+            user.setSurname(txtSurname.getText());
+            if (dpBirthdate.getValue() != null) {
+                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+            }
+            db.Update(user);
+        }
     }
 
     @FXML
     void onSearchButtonClick(MouseEvent event) {
-        List<Object> result = new ArrayList<>();
-        result = db.GetUser("c001","code");
+        List<Object> result = db.GetObject("c001","code");
         if (result.size() > 1) {
             // Alertdialog o lo que sea para elegir el usuario a mostrar
         }

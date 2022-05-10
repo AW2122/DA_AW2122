@@ -14,18 +14,16 @@ public class DatabaseController {
         protected SessionFactory sessionFactory;
         protected HibernateCRUD<UsersEntity> userCRUD = null;
         protected HibernateCRUD<BooksEntity> bookCRUD = null;
+        protected HibernateCRUD<LendingEntity> LendingEntityCRUD = null;
 
         public DatabaseController() {
                 sessionFactory = new Configuration().configure().buildSessionFactory();
                 userCRUD = new HibernateCRUD<>(new UsersEntity(), sessionFactory);
                 bookCRUD = new HibernateCRUD<>(new BooksEntity(), sessionFactory);
+                LendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
         }
 
-        /*public Class GetClass() {
-                if
-        }*/
-
-        public List<Object> GetUser (String searchParameter, String fieldName) {
+        public List<Object> GetObject (String searchParameter, String fieldName) {
                 List<Object> result = null;
                 try {
                         result.add(userCRUD.GetData(searchParameter, fieldName));
@@ -51,6 +49,21 @@ public class DatabaseController {
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
+        }
+
+        public void Update(Object object) {
+                try {
+                        if (object instanceof UsersEntity) {
+                                userCRUD.UpdateObject(object);
+                        }
+                        else {
+
+                        }
+                }
+                catch (Exception e) {
+
+                }
+
         }
 
 }
