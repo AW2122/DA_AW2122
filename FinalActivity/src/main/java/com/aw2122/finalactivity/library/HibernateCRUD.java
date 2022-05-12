@@ -26,7 +26,7 @@ public class HibernateCRUD<T> {
         return list;
     }
 
-    public void InsertObject(Object t) throws Exception {
+    public void InsertObject(T t) throws Exception {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         session.save(t);
@@ -34,7 +34,7 @@ public class HibernateCRUD<T> {
         session.close();
     }
 
-    public void UpdateObject(Object t) throws Exception {
+    public void UpdateObject(T t) throws Exception {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         session.update(t);

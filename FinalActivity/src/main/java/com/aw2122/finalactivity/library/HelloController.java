@@ -17,12 +17,8 @@ import java.util.List;
 public class HelloController {
 
     DatabaseController db = new DatabaseController();
-    Boolean userMenuVisible = true;
-    Boolean bookMenuVisible = false;
-    Boolean isEditing = false;
-    Boolean isAdding = false;
-    Boolean isSearching = false;
-    Boolean isReading = false;
+
+    // enum estados if state ==
 
     @FXML
     private ImageView addButton;
@@ -53,6 +49,9 @@ public class HelloController {
 
     @FXML
     private DatePicker dpBirthdate;
+
+    @FXML
+    private ImageView btnCheck;
 
     @FXML
     private ImageView editButton;
@@ -127,7 +126,13 @@ public class HelloController {
     }
 
     @FXML
+    void onCheckButtonClicked(MouseEvent event) {
+
+    }
+
+    @FXML
     void onAddButtonClicked(MouseEvent event) {
+        // Activar grid
         if (userMenu.isVisible()) {
             UsersEntity user = new UsersEntity();
             user.setCode(txtCode.getText());
@@ -154,7 +159,6 @@ public class HelloController {
 
     @FXML
     void onEditButtonClicked(KeyEvent event) {
-        isEditing = true;
         if (userMenu.isVisible()) {
             UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
             user.setName(txtName.getText());

@@ -34,16 +34,15 @@ public class DatabaseController {
                 return result;
         }
 
-        public void Insert(Object obj) {
+        public void Insert(Object object) {
                 try {
-                        if (obj.getClass().getName().equals("UsersEntity")) {
-                                userCRUD.InsertObject(obj);
+                        if (object instanceof UsersEntity) {
+                                userCRUD.InsertObject((UsersEntity) object);
                         }
-                        else if (obj instanceof BooksEntity) {
-                                bookCRUD.InsertObject(obj);
+                        else if (object instanceof BooksEntity) {
+                                bookCRUD.InsertObject((BooksEntity) object);
                         }
                         else {
-                                System.out.println("Mal");
                         }
 
                 } catch (Exception e) {
@@ -54,16 +53,14 @@ public class DatabaseController {
         public void Update(Object object) {
                 try {
                         if (object instanceof UsersEntity) {
-                                userCRUD.UpdateObject(object);
+                                userCRUD.UpdateObject((UsersEntity) object);
                         }
-                        else {
-
+                        else if (object instanceof BooksEntity) {
+                                bookCRUD.UpdateObject((BooksEntity) object);
+                        } else {
                         }
                 }
                 catch (Exception e) {
-
                 }
-
         }
-
 }
