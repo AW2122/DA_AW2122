@@ -73,7 +73,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.aw2122.finalactivity.library/com.aw2122.finalactivity.library.HelloApplication
+                                com.aw2122.finalactivity.library/com.aw2122.finalactivity.library.LibraryApplication
                             </mainClass>
                         </configuration>
                     </execution>
