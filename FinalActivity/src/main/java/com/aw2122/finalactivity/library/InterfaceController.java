@@ -91,7 +91,7 @@ public class InterfaceController {
     private TextField txtOutline;
 
     @FXML
-    private TextField txtPubillsher;
+    private TextField txtPublisher;
 
     @FXML
     private TextField txtSurname;
@@ -126,18 +126,60 @@ public class InterfaceController {
     void onCheckButtonClicked(MouseEvent event) {
         if (state == InterfaceStatus.USER_ADD) {
             System.out.println("Añadiendo usuario.");
+            /*UsersEntity user = new UsersEntity();
+            user.setCode(txtCode.getText());
+            user.setName(txtName.getText());
+            user.setSurname(txtSurname.getText());
+            if (dpBirthdate.getValue() != null) {
+                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+            }
+            db.Insert(user);*/
         }
         if (state == InterfaceStatus.USER_EDIT) {
             System.out.println("Editando usuario.");
+            /*UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
+            user.setName(txtName.getText());
+            user.setSurname(txtSurname.getText());
+            if (dpBirthdate.getValue() != null) {
+                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+            }
+            db.Update(user);*/
         }
         if (state == InterfaceStatus.USER_SEARCH) {
             System.out.println("Buscando usuario.");
+            if (!txtCode.getText().isEmpty()) {
+               /* List<Object> result = db.GetObject(txtCode.getText(),"code");
+                if (result.size() > 1) {
+                    // Alertdialog o lo que sea para elegir el usuario a mostrar
+                }
+                UsersEntity user = (UsersEntity) result.get(0);
+                txtCode.setText(user.getCode());
+                txtName.setText(user.getName());
+                txtSurname.setText(user.getSurname());*/
+
+            }
         }
         if (state == InterfaceStatus.BOOK_ADD) {
             System.out.println("Añadiendo libro.");
+            /*BooksEntity book = new BooksEntity();
+            book.setIsbn(txtIsbn.getText());
+            book.setTitle(txtTitle.getText());
+            book.setCopies((int) copiesSlider.getValue());
+            book.setCover(txtCover.getText());
+            book.setOutline(txtOutline.getText());
+            book.setPublisher(txtPubillsher.getText());
+            db.Insert(book);*/
         }
         if (state == InterfaceStatus.BOOK_EDIT) {
             System.out.println("Editando libro.");
+            /*BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
+            book.setTitle(txtTitle.getText());
+            book.setCopies((int) copiesSlider.getValue());
+            book.setPublisher(txtPublisher.getText());
+            book.setOutline(txtOutline.getText());
+            book.setCover(txtCover.getText());
+
+            db.Update(book);*/
         }
         if (state == InterfaceStatus.BOOK_SEARCH) {
             System.out.println("Buscando libro.");
@@ -166,29 +208,12 @@ public class InterfaceController {
             state = InterfaceStatus.USER_ADD;
             setMainGridVisibility(state);
             disableFields(false, state);
-
-            /*UsersEntity user = new UsersEntity();
-            user.setCode(txtCode.getText());
-            user.setName(txtName.getText());
-            user.setSurname(txtSurname.getText());
-            if (dpBirthdate.getValue() != null) {
-                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
-            }
-            db.Insert(user);*/
         }
 
         if (bookMenu.isVisible()) {
             state = InterfaceStatus.BOOK_ADD;
             setMainGridVisibility(state);
             disableFields(false, state);
-            /*BooksEntity book = new BooksEntity();
-            book.setIsbn(txtIsbn.getText());
-            book.setTitle(txtTitle.getText());
-            book.setCopies((int) copiesSlider.getValue());
-            book.setCover(txtCover.getText());
-            book.setOutline(txtOutline.getText());
-            book.setPublisher(txtPubillsher.getText());
-            db.Insert(book);*/
         }
 
     }
@@ -199,13 +224,6 @@ public class InterfaceController {
             state = InterfaceStatus.USER_EDIT;
             setMainGridVisibility(state);
             disableFields(false, state);
-            /*UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
-            user.setName(txtName.getText());
-            user.setSurname(txtSurname.getText());
-            if (dpBirthdate.getValue() != null) {
-                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
-            }
-            db.Update(user);*/
         }
         if (bookMenu.isVisible()) {
             state = InterfaceStatus.BOOK_EDIT;
@@ -216,14 +234,11 @@ public class InterfaceController {
 
     @FXML
     void onSearchButtonClick(MouseEvent event) {
-       /* List<Object> result = db.GetObject("c001","code");
-        if (result.size() > 1) {
-            // Alertdialog o lo que sea para elegir el usuario a mostrar
+        if (userMenu.isVisible()) {
+            state = InterfaceStatus.USER_SEARCH;
+            setMainGridVisibility(state);
+
         }
-        UsersEntity user = (UsersEntity) result.get(0);
-        txtCode.setText(user.getCode());
-        txtName.setText(user.getName());
-        txtSurname.setText(user.getSurname());*/
     }
 
     @FXML
@@ -285,14 +300,14 @@ public class InterfaceController {
             case BOOK_ADD, BOOK_IDLE -> {
                 txtIsbn.setDisable(disable);
                 txtTitle.setDisable(disable);
-                txtPubillsher.setDisable(disable);
+                txtPublisher.setDisable(disable);
                 txtCover.setDisable(disable);
                 txtOutline.setDisable(disable);
                 copiesSlider.setDisable(disable);
             }
             case BOOK_EDIT -> {
                 txtTitle.setDisable(disable);
-                txtPubillsher.setDisable(disable);
+                txtPublisher.setDisable(disable);
                 txtCover.setDisable(disable);
                 txtOutline.setDisable(disable);
                 copiesSlider.setDisable(disable);
