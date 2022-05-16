@@ -247,15 +247,7 @@ public class InterfaceController {
     }
 
     void setMainGridVisibility(InterfaceStatus state) {
-        userMenu.setVisible(false);
-        bookMenu.setVisible(false);
-        borrowMenu.setVisible(false);
-        returnMenu.setVisible(false);
-
-        bottomPanelMenu.setVisible(false);
-        bottomSaveCancel.setVisible(false);
-        bottomPanelAdd.setVisible(false);
-
+        hideGrids();
         switch (state) {
             case USER_IDLE -> {
                 userMenu.setVisible(true);
@@ -282,6 +274,16 @@ public class InterfaceController {
                 bottomPanelAdd.setVisible(true);
             }
         }
+    }
+
+    void hideGrids() {
+         userMenu.setVisible(false);
+         bookMenu.setVisible(false);
+         borrowMenu.setVisible(false);
+         returnMenu.setVisible(false);
+         bottomPanelMenu.setVisible(false);
+         bottomSaveCancel.setVisible(false);
+         bottomPanelAdd.setVisible(false);
     }
 
     void disableFields(Boolean disable, InterfaceStatus state) {
