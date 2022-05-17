@@ -23,18 +23,18 @@ public class DatabaseController {
                 LendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
         }
 
-        public List<Object> GetObject (String searchParameter, String fieldName) {
-                List<Object> result = null;
+        public List<?> GetObject (String searchParameter, String fieldName) {
+                List<UsersEntity> result = new ArrayList<>();
                 try {
-                        result.add(userCRUD.GetData(searchParameter, fieldName));
-
+                        
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
                 return result;
         }
 
-        public void Insert(Object object) {
+        public boolean Insert(Object object) {
+                boolean success;
                 try {
                         if (object instanceof UsersEntity) {
                                 userCRUD.InsertObject((UsersEntity) object);
@@ -44,13 +44,17 @@ public class DatabaseController {
                         }
                         else {
                         }
+                        success = true;
 
                 } catch (Exception e) {
                         e.printStackTrace();
+                        success = false;
                 }
+                return success;
         }
 
-        public void Update(Object object) {
+        public boolean Update(Object object) {
+                boolean success;
                 try {
                         if (object instanceof UsersEntity) {
                                 userCRUD.UpdateObject((UsersEntity) object);
@@ -58,9 +62,13 @@ public class DatabaseController {
                         else if (object instanceof BooksEntity) {
                                 bookCRUD.UpdateObject((BooksEntity) object);
                         } else {
+
                         }
+                        success = true;
                 }
                 catch (Exception e) {
+                        success = false;
                 }
+                return success;
         }
 }

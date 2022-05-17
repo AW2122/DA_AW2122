@@ -2,6 +2,7 @@ package com.aw2122.finalactivity.library;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -9,9 +10,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Slider;
 
+import java.sql.Date;
+import java.util.List;
+
 public class InterfaceController {
 
     DatabaseController db = new DatabaseController();
+
+    Alert alertDialog = new Alert(Alert.AlertType.NONE);
 
     //String state;
     InterfaceStatus state;
@@ -125,120 +131,134 @@ public class InterfaceController {
     @FXML
     void onCheckButtonClicked(MouseEvent event) {
         if (state == InterfaceStatus.USER_ADD) {
-            System.out.println("Añadiendo usuario.");
-            /*UsersEntity user = new UsersEntity();
+            UsersEntity user = new UsersEntity();
             user.setCode(txtCode.getText());
             user.setName(txtName.getText());
             user.setSurname(txtSurname.getText());
             if (dpBirthdate.getValue() != null) {
                 user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
             }
-            db.Insert(user);*/
+            successfulTransactionAlert(db.Insert(user), state);
+            state = InterfaceStatus.USER_IDLE;
         }
         if (state == InterfaceStatus.USER_EDIT) {
             System.out.println("Editando usuario.");
-            /*UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
+            UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
             user.setName(txtName.getText());
             user.setSurname(txtSurname.getText());
             if (dpBirthdate.getValue() != null) {
                 user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
             }
-            db.Update(user);*/
+            successfulTransactionAlert(db.Update(user), state);
         }
         if (state == InterfaceStatus.USER_SEARCH) {
             System.out.println("Buscando usuario.");
             if (!txtCode.getText().isEmpty()) {
-               /* List<Object> result = db.GetObject(txtCode.getText(),"code");
-                if (result.size() > 1) {
+                @SuppressWarnings("unchecked")
+                List<UsersEntity> list = (List<UsersEntity>) db.GetObject(txtCode.getText(), "code");
+                /*if (result.size() > 1) {
                     // Alertdialog o lo que sea para elegir el usuario a mostrar
-                }
-                UsersEntity user = (UsersEntity) result.get(0);
+                }*/
+                UsersEntity user = list.get(0);
                 txtCode.setText(user.getCode());
                 txtName.setText(user.getName());
-                txtSurname.setText(user.getSurname());*/
-
+                txtSurname.setText(user.getSurname());
+                //successfulTransactionAlert(result.size() >= 1, state);
             }
         }
         if (state == InterfaceStatus.BOOK_ADD) {
-            System.out.println("Añadiendo libro.");
-            /*BooksEntity book = new BooksEntity();
+            BooksEntity book = new BooksEntity();
             book.setIsbn(txtIsbn.getText());
             book.setTitle(txtTitle.getText());
             book.setCopies((int) copiesSlider.getValue());
             book.setCover(txtCover.getText());
             book.setOutline(txtOutline.getText());
-            book.setPublisher(txtPubillsher.getText());
-            db.Insert(book);*/
+            book.setPublisher(txtPublisher.getText());
+            successfulTransactionAlert(db.Insert(book), state);
+            state = InterfaceStatus.BOOK_IDLE;
+
         }
         if (state == InterfaceStatus.BOOK_EDIT) {
             System.out.println("Editando libro.");
-            /*BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
+            BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
             book.setTitle(txtTitle.getText());
             book.setCopies((int) copiesSlider.getValue());
             book.setPublisher(txtPublisher.getText());
             book.setOutline(txtOutline.getText());
             book.setCover(txtCover.getText());
-
-            db.Update(book);*/
+            successfulTransactionAlert(db.Insert(book), state);
+            state = InterfaceStatus.BOOK_IDLE;
         }
         if (state == InterfaceStatus.BOOK_SEARCH) {
             System.out.println("Buscando libro.");
         }
+        clearFields();
+        disableFields(true, state);
+        setMainGridVisibility(state);
+    }
+
+    private void successfulTransactionAlert(boolean success, InterfaceStatus state) {
+        if (success) {
+            alertDialog.setAlertType(Alert.AlertType.INFORMATION);
+            switch (state) {
+                case USER_ADD -> alertDialog.setContentText("User successfully added.");
+                case USER_EDIT -> alertDialog.setContentText("User successfully edited.");
+                case BOOK_ADD -> alertDialog.setContentText("Book successfully added.");
+                case BOOK_EDIT -> alertDialog.setContentText("Book successfully edited.");
+            }
+        } else {
+            alertDialog.setAlertType(Alert.AlertType.WARNING);
+            switch (state) {
+                case USER_ADD -> alertDialog.setContentText("User could not be added.");
+                case USER_EDIT -> alertDialog.setContentText("User could not be edited.");
+                case BOOK_ADD -> alertDialog.setContentText("Book could not be added.");
+                case BOOK_EDIT -> alertDialog.setContentText("Book could not be edited.");
+                case USER_SEARCH -> alertDialog.setContentText("User could not be found.");
+                case BOOK_SEARCH -> alertDialog.setContentText("Book could not be found.");
+            }
+        }
+        alertDialog.show();
     }
 
     @FXML
     void onCancelButtonClicked(MouseEvent event) {
-        if (state == InterfaceStatus.USER_ADD || state == InterfaceStatus.USER_EDIT) {
-            state = InterfaceStatus.USER_IDLE;
-            setMainGridVisibility(state);
-            disableFields(true, state);
-
+        switch (state) {
+            case USER_ADD, USER_EDIT, USER_SEARCH -> state = InterfaceStatus.USER_IDLE;
+            case BOOK_ADD, BOOK_EDIT, BOOK_SEARCH -> state = InterfaceStatus.BOOK_IDLE;
         }
-        if (state == InterfaceStatus.BOOK_ADD || state == InterfaceStatus.BOOK_EDIT) {
-            state = InterfaceStatus.BOOK_IDLE;
-            setMainGridVisibility(state);
-            disableFields(true, state);
-        }
+        setMainGridVisibility(state);
+        disableFields(true, state);
+        clearFields();
     }
 
     @FXML
     void onAddButtonClicked(MouseEvent event) {
-        // Activar grid
-        if (userMenu.isVisible()) {
+        if (userMenu.isVisible())
             state = InterfaceStatus.USER_ADD;
-            setMainGridVisibility(state);
-            disableFields(false, state);
-        }
-
-        if (bookMenu.isVisible()) {
+        if (bookMenu.isVisible())
             state = InterfaceStatus.BOOK_ADD;
-            setMainGridVisibility(state);
-            disableFields(false, state);
-        }
-
+        setMainGridVisibility(state);
+        disableFields(false, state);
     }
 
     @FXML
     void onEditButtonClicked(MouseEvent event) {
-        if (userMenu.isVisible()) {
+        if (userMenu.isVisible())
             state = InterfaceStatus.USER_EDIT;
-            setMainGridVisibility(state);
-            disableFields(false, state);
-        }
-        if (bookMenu.isVisible()) {
+        if (bookMenu.isVisible())
             state = InterfaceStatus.BOOK_EDIT;
-            setMainGridVisibility(state);
-            disableFields(false, state);
-        }
+        setMainGridVisibility(state);
+        disableFields(false, state);
     }
 
     @FXML
     void onSearchButtonClick(MouseEvent event) {
-        if (userMenu.isVisible()) {
+        if (userMenu.isVisible())
             state = InterfaceStatus.USER_SEARCH;
-            setMainGridVisibility(state);
-
-        }
+        if (bookMenu.isVisible())
+            state = InterfaceStatus.BOOK_SEARCH;
+        setMainGridVisibility(state);
+        disableFields(false, state);
     }
 
     @FXML
@@ -288,7 +308,7 @@ public class InterfaceController {
 
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
-            case USER_ADD, USER_IDLE -> {
+            case USER_ADD, USER_IDLE, USER_SEARCH -> {
                 txtCode.setDisable(disable);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
@@ -315,5 +335,18 @@ public class InterfaceController {
                 copiesSlider.setDisable(disable);
             }
         }
+    }
+
+    void clearFields() {
+        txtCode.setText("");
+        txtName.setText("");
+        txtSurname.setText("");
+        txtIsbn.setText("");
+        txtTitle.setText("");
+        txtPublisher.setText("");
+        txtCover.setText("");
+        txtOutline.setText("");
+        copiesSlider.adjustValue(0);
+        dpBirthdate.getEditor().clear();
     }
 }

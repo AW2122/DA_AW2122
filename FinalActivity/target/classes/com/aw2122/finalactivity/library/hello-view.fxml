@@ -206,7 +206,7 @@
                         <Insets left="20.0" />
                     </padding>
                 </Label>
-                <TextField fx:id="txtPubillsher" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <TextField fx:id="txtPublisher" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </children>
             <padding>
                 <Insets left="20.0" right="20.0" />
