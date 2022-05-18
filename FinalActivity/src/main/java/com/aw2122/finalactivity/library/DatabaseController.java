@@ -6,15 +6,14 @@ import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import org.hibernate.query.QueryParameter;
-
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class DatabaseController {
         protected SessionFactory sessionFactory;
-        protected HibernateCRUD<UsersEntity> userCRUD = null;
-        protected HibernateCRUD<BooksEntity> bookCRUD = null;
-        protected HibernateCRUD<LendingEntity> LendingEntityCRUD = null;
+        protected HibernateCRUD<UsersEntity> userCRUD;
+        protected HibernateCRUD<BooksEntity> bookCRUD;
+        protected HibernateCRUD<LendingEntity> LendingEntityCRUD;
 
         public DatabaseController() {
                 sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -23,10 +22,15 @@ public class DatabaseController {
                 LendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
         }
 
-        public List<?> GetObject (String searchParameter, String fieldName) {
-                List<UsersEntity> result = new ArrayList<>();
+        public List<Object> GetObject (String searchParameter, String fieldName, String status) throws Exception {
+                List result = null;
                 try {
-                        
+                        if (status.contains("USER")) {
+                                result = userCRUD.GetData(searchParameter, fieldName);
+                        }
+                        if (status.contains("BOOK")) {
+                                result = bookCRUD.GetData(searchParameter, fieldName);
+                        }
                 } catch (Exception e) {
                         e.printStackTrace();
                 }

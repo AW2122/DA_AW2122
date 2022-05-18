@@ -129,7 +129,7 @@ public class InterfaceController {
     }
 
     @FXML
-    void onCheckButtonClicked(MouseEvent event) {
+    void onCheckButtonClicked(MouseEvent event) throws Exception {
         if (state == InterfaceStatus.USER_ADD) {
             UsersEntity user = new UsersEntity();
             user.setCode(txtCode.getText());
@@ -143,7 +143,7 @@ public class InterfaceController {
         }
         if (state == InterfaceStatus.USER_EDIT) {
             System.out.println("Editando usuario.");
-            UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
+            UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
             user.setName(txtName.getText());
             user.setSurname(txtSurname.getText());
             if (dpBirthdate.getValue() != null) {
@@ -152,19 +152,27 @@ public class InterfaceController {
             successfulTransactionAlert(db.Update(user), state);
         }
         if (state == InterfaceStatus.USER_SEARCH) {
-            System.out.println("Buscando usuario.");
             if (!txtCode.getText().isEmpty()) {
-                @SuppressWarnings("unchecked")
-                List<UsersEntity> list = (List<UsersEntity>) db.GetObject(txtCode.getText(), "code");
-                /*if (result.size() > 1) {
-                    // Alertdialog o lo que sea para elegir el usuario a mostrar
-                }*/
-                UsersEntity user = list.get(0);
-                txtCode.setText(user.getCode());
-                txtName.setText(user.getName());
+                UsersEntity user;
+                if (db.GetObject(txtCode.getText(), "code", state.toString()).size() > 1) {
+                    //user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(input);
+                }
+                else if (db.GetObject(txtCode.getText(), "code", state.toString()).size() < 1) {
+                    alertDialog.setAlertType(Alert.AlertType.WARNING);
+                    alertDialog.setContentText("User not found.");
+                    alertDialog.show();
+                }
+                user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
+                txtName.setText(String.valueOf(user.getName()));
                 txtSurname.setText(user.getSurname());
-                //successfulTransactionAlert(result.size() >= 1, state);
+                //dpBirthdate.
+                //successfulTransactionAlert(db.GetObject(txtCode.getText(), "code", state.toString()).size() > 0, state);
+            } else {
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("Code field cannot be empty.");
+                alertDialog.show();
             }
+            state = InterfaceStatus.USER_IDLE;
         }
         if (state == InterfaceStatus.BOOK_ADD) {
             BooksEntity book = new BooksEntity();
@@ -180,7 +188,7 @@ public class InterfaceController {
         }
         if (state == InterfaceStatus.BOOK_EDIT) {
             System.out.println("Editando libro.");
-            BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
+            BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
             book.setTitle(txtTitle.getText());
             book.setCopies((int) copiesSlider.getValue());
             book.setPublisher(txtPublisher.getText());
@@ -192,7 +200,7 @@ public class InterfaceController {
         if (state == InterfaceStatus.BOOK_SEARCH) {
             System.out.println("Buscando libro.");
         }
-        clearFields();
+        //clearFields();
         disableFields(true, state);
         setMainGridVisibility(state);
     }
@@ -205,6 +213,7 @@ public class InterfaceController {
                 case USER_EDIT -> alertDialog.setContentText("User successfully edited.");
                 case BOOK_ADD -> alertDialog.setContentText("Book successfully added.");
                 case BOOK_EDIT -> alertDialog.setContentText("Book successfully edited.");
+                case USER_SEARCH -> alertDialog.setContentText("User found.");
             }
         } else {
             alertDialog.setAlertType(Alert.AlertType.WARNING);
@@ -233,6 +242,7 @@ public class InterfaceController {
 
     @FXML
     void onAddButtonClicked(MouseEvent event) {
+        clearFields();
         if (userMenu.isVisible())
             state = InterfaceStatus.USER_ADD;
         if (bookMenu.isVisible())
@@ -243,6 +253,7 @@ public class InterfaceController {
 
     @FXML
     void onEditButtonClicked(MouseEvent event) {
+        clearFields();
         if (userMenu.isVisible())
             state = InterfaceStatus.USER_EDIT;
         if (bookMenu.isVisible())
@@ -253,6 +264,7 @@ public class InterfaceController {
 
     @FXML
     void onSearchButtonClick(MouseEvent event) {
+        clearFields();
         if (userMenu.isVisible())
             state = InterfaceStatus.USER_SEARCH;
         if (bookMenu.isVisible())
@@ -308,17 +320,17 @@ public class InterfaceController {
 
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
-            case USER_ADD, USER_IDLE, USER_SEARCH -> {
+            case USER_ADD, USER_IDLE, USER_SEARCH, USER_EDIT -> {
                 txtCode.setDisable(disable);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
             }
-            case  USER_EDIT -> {
+            /*case  USER_EDIT -> {
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
-            }
+            }*/
             case BOOK_ADD, BOOK_IDLE -> {
                 txtIsbn.setDisable(disable);
                 txtTitle.setDisable(disable);
