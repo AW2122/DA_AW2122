@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.control.Slider;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class InterfaceController {
@@ -142,31 +143,38 @@ public class InterfaceController {
             state = InterfaceStatus.USER_IDLE;
         }
         if (state == InterfaceStatus.USER_EDIT) {
-            System.out.println("Editando usuario.");
-            UsersEntity user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
-            user.setName(txtName.getText());
-            user.setSurname(txtSurname.getText());
-            if (dpBirthdate.getValue() != null) {
-                user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+            UsersEntity user;
+            if (!txtCode.getText().isEmpty()) {
+                user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
+                user.setName(txtName.getText());
+                user.setSurname(txtSurname.getText());
+                if (dpBirthdate.getValue() != null) {
+                    user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
+                }
+                db.Update(user);
+                successfulTransactionAlert(true, state);
             }
-            successfulTransactionAlert(db.Update(user), state);
+            clearFields();
+            state = InterfaceStatus.USER_IDLE;
         }
         if (state == InterfaceStatus.USER_SEARCH) {
             if (!txtCode.getText().isEmpty()) {
                 UsersEntity user;
-                if (db.GetObject(txtCode.getText(), "code", state.toString()).size() > 1) {
-                    //user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(input);
-                }
-                else if (db.GetObject(txtCode.getText(), "code", state.toString()).size() < 1) {
+                if (db.GetObject(txtCode.getText(), "code", state.toString()).size() < 1) {
                     alertDialog.setAlertType(Alert.AlertType.WARNING);
                     alertDialog.setContentText("User not found.");
                     alertDialog.show();
                 }
-                user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
-                txtName.setText(String.valueOf(user.getName()));
-                txtSurname.setText(user.getSurname());
-                //dpBirthdate.
-                //successfulTransactionAlert(db.GetObject(txtCode.getText(), "code", state.toString()).size() > 0, state);
+                else {
+                    user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
+                    txtName.setText(String.valueOf(user.getName()));
+                    txtSurname.setText(user.getSurname());
+                    if (user.getBirthdate() != null) {
+                        LocalDate date = user.getBirthdate().toLocalDate();
+                        dpBirthdate.setValue(date);
+                    }
+                    //successfulTransactionAlert(true, state);
+                }
             } else {
                 alertDialog.setAlertType(Alert.AlertType.WARNING);
                 alertDialog.setContentText("Code field cannot be empty.");
@@ -176,29 +184,60 @@ public class InterfaceController {
         }
         if (state == InterfaceStatus.BOOK_ADD) {
             BooksEntity book = new BooksEntity();
-            book.setIsbn(txtIsbn.getText());
-            book.setTitle(txtTitle.getText());
-            book.setCopies((int) copiesSlider.getValue());
-            book.setCover(txtCover.getText());
-            book.setOutline(txtOutline.getText());
-            book.setPublisher(txtPublisher.getText());
-            successfulTransactionAlert(db.Insert(book), state);
+            if (!txtIsbn.getText().isEmpty()) {
+                book.setIsbn(txtIsbn.getText());
+                book.setTitle(txtTitle.getText());
+                book.setCopies((int) copiesSlider.getValue());
+                book.setCover(txtCover.getText());
+                book.setOutline(txtOutline.getText());
+                book.setPublisher(txtPublisher.getText());
+                successfulTransactionAlert(db.Insert(book), state);
+            } else {
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("ISBN field cannot be empty.");
+                alertDialog.show();
+            }
             state = InterfaceStatus.BOOK_IDLE;
-
         }
         if (state == InterfaceStatus.BOOK_EDIT) {
-            System.out.println("Editando libro.");
-            BooksEntity book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
-            book.setTitle(txtTitle.getText());
-            book.setCopies((int) copiesSlider.getValue());
-            book.setPublisher(txtPublisher.getText());
-            book.setOutline(txtOutline.getText());
-            book.setCover(txtCover.getText());
-            successfulTransactionAlert(db.Insert(book), state);
+            BooksEntity book;
+            if (!txtIsbn.getText().isEmpty()) {
+                book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
+                book.setTitle(txtTitle.getText());
+                book.setCopies((int) copiesSlider.getValue());
+                book.setPublisher(txtPublisher.getText());
+                book.setOutline(txtOutline.getText());
+                book.setCover(txtCover.getText());
+                db.Update(book);
+                successfulTransactionAlert(true, state);
+            }
+            clearFields();
             state = InterfaceStatus.BOOK_IDLE;
         }
         if (state == InterfaceStatus.BOOK_SEARCH) {
-            System.out.println("Buscando libro.");
+            if (!txtIsbn.getText().isEmpty()) {
+                BooksEntity book;
+                if (db.GetObject(txtIsbn.getText(), "isbn", state.toString()).size() < 1) {
+                    alertDialog.setAlertType(Alert.AlertType.WARNING);
+                    alertDialog.setContentText("Book not found.");
+                    alertDialog.show();
+                }
+                else {
+                    book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
+                    txtIsbn.setText(String.valueOf(book.getIsbn()));
+                    txtTitle.setText(book.getTitle());
+                    copiesSlider.setValue(book.getCopies());
+                    txtPublisher.setText(book.getPublisher());
+                    txtOutline.setText(book.getOutline());
+                    txtCover.setText(book.getCover());
+                    successfulTransactionAlert(true, state);
+                }
+            } else {
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("ISBN field cannot be empty.");
+                alertDialog.show();
+            }
+            state = InterfaceStatus.BOOK_IDLE;
         }
         //clearFields();
         disableFields(true, state);
@@ -253,8 +292,7 @@ public class InterfaceController {
 
     @FXML
     void onEditButtonClicked(MouseEvent event) {
-        clearFields();
-        if (userMenu.isVisible())
+        if (userMenu.isVisible() && !txtCode.getText().isEmpty())
             state = InterfaceStatus.USER_EDIT;
         if (bookMenu.isVisible())
             state = InterfaceStatus.BOOK_EDIT;
@@ -270,7 +308,7 @@ public class InterfaceController {
         if (bookMenu.isVisible())
             state = InterfaceStatus.BOOK_SEARCH;
         setMainGridVisibility(state);
-        disableFields(false, state);
+        disableFields(true, state);
     }
 
     @FXML
@@ -320,17 +358,24 @@ public class InterfaceController {
 
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
-            case USER_ADD, USER_IDLE, USER_SEARCH, USER_EDIT -> {
+            case USER_ADD, USER_IDLE -> {
                 txtCode.setDisable(disable);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
             }
-            /*case  USER_EDIT -> {
+            case USER_SEARCH -> {
+                txtCode.setDisable(false);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
-            }*/
+            }
+            case  USER_EDIT -> {
+                txtCode.setDisable(true);
+                txtName.setDisable(disable);
+                txtSurname.setDisable(disable);
+                dpBirthdate.setDisable(disable);
+            }
             case BOOK_ADD, BOOK_IDLE -> {
                 txtIsbn.setDisable(disable);
                 txtTitle.setDisable(disable);
@@ -340,6 +385,15 @@ public class InterfaceController {
                 copiesSlider.setDisable(disable);
             }
             case BOOK_EDIT -> {
+                txtIsbn.setDisable(true);
+                txtTitle.setDisable(disable);
+                txtPublisher.setDisable(disable);
+                txtCover.setDisable(disable);
+                txtOutline.setDisable(disable);
+                copiesSlider.setDisable(disable);
+            }
+            case BOOK_SEARCH -> {
+                txtIsbn.setDisable(false);
                 txtTitle.setDisable(disable);
                 txtPublisher.setDisable(disable);
                 txtCover.setDisable(disable);
