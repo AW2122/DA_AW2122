@@ -11,5 +11,8 @@ public enum InterfaceStatus {
     BOOK_ADD,
     BOOK_SEARCH,
     BORROW_IDLE,
-    RETURN_IDLE;
+    BORROW_ADD,
+    RETURN_IDLE,
+    RETURN_ADD;
+
 }

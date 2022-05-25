@@ -1,36 +1,35 @@
 package com.aw2122.finalactivity.library;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
-import org.hibernate.query.QueryParameter;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class DatabaseController {
         protected SessionFactory sessionFactory;
         protected HibernateCRUD<UsersEntity> userCRUD;
         protected HibernateCRUD<BooksEntity> bookCRUD;
-        protected HibernateCRUD<LendingEntity> LendingEntityCRUD;
+        protected HibernateCRUD<LendingEntity> lendingEntityCRUD;
 
         public DatabaseController() {
                 sessionFactory = new Configuration().configure().buildSessionFactory();
                 userCRUD = new HibernateCRUD<>(new UsersEntity(), sessionFactory);
                 bookCRUD = new HibernateCRUD<>(new BooksEntity(), sessionFactory);
-                LendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
+                lendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
         }
 
-        public List<Object> GetObject (String searchParameter, String fieldName, String status) throws Exception {
+        public List<Object> GetObject (String searchParameter, String fieldName) throws Exception {
                 List result = null;
                 try {
-                        if (status.contains("USER")) {
+                        if (fieldName.equals("code")) {
                                 result = userCRUD.GetData(searchParameter, fieldName);
+
                         }
-                        if (status.contains("BOOK")) {
+                        if (fieldName.equals("isbn")) {
                                 result = bookCRUD.GetData(searchParameter, fieldName);
                         }
+                        /*if (status.contains("BORROW")) {
+                                result = lendingEntityCRUD.GetData(searchParameter,fieldName);
+                        }*/
                 } catch (Exception e) {
                         e.printStackTrace();
                 }

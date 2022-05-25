@@ -2,17 +2,13 @@ package com.aw2122.finalactivity.library;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Slider;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 
 public class InterfaceController {
 
@@ -22,6 +18,9 @@ public class InterfaceController {
 
     //String state;
     InterfaceStatus state;
+
+    UsersEntity searchedUser;
+    BooksEntity searchedBook;
 
     // enum estados if state ==
 
@@ -38,7 +37,7 @@ public class InterfaceController {
     private ImageView borrowButton;
 
     @FXML
-    private GridPane borrowMenu;
+    private GridPane ReturnMenu;
 
     @FXML
     private GridPane bottomPanelAdd;
@@ -54,6 +53,12 @@ public class InterfaceController {
 
     @FXML
     private DatePicker dpBirthdate;
+
+    @FXML
+    private ImageView btnUserSearch;
+
+    @FXML
+    private ImageView btnBookSearch;
 
     @FXML
     private ImageView btnCheck;
@@ -72,6 +77,9 @@ public class InterfaceController {
 
     @FXML
     private ImageView returnButton;
+
+    @FXML
+    private ImageView btnAddBorrowReturn;
 
     @FXML
     private GridPane returnMenu;
@@ -107,6 +115,21 @@ public class InterfaceController {
     private TextField txtTitle;
 
     @FXML
+    private TextField txtUserReturn;
+
+    @FXML
+    private TextField txtUserReturnCode;
+
+    @FXML
+    private TextField txtBookReturnCode;
+
+    @FXML
+    private TextField txtBookReturnTitle;
+
+    @FXML
+    private Label lblMenuTitle;
+
+    @FXML
     private GridPane userMenu;
 
     @FXML
@@ -121,13 +144,59 @@ public class InterfaceController {
 
     @FXML
     void onBorrowButtonClick(MouseEvent event) {
-        setMainGridVisibility(InterfaceStatus.BORROW_IDLE);
+        setMainGridVisibility(state = InterfaceStatus.BORROW_IDLE);
+        lblMenuTitle.setText("Borrow Menu");
     }
 
     @FXML
     void onReturnButtonClick(MouseEvent event) {
-        setMainGridVisibility(InterfaceStatus.RETURN_IDLE);
+        setMainGridVisibility(state = InterfaceStatus.RETURN_IDLE);
+        lblMenuTitle.setText("Return Menu");
     }
+
+    @FXML
+    void onUserSearchButtonClick(MouseEvent event) throws Exception {
+        if (!txtUserReturnCode.getText().isEmpty()) {
+            UsersEntity user;
+            if (db.GetObject(txtUserReturnCode.getText(), "code").size() < 1) {
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("User not found.");
+                alertDialog.show();
+            } else {
+                user = (UsersEntity) db.GetObject(txtUserReturnCode.getText(), "code").get(0);
+                txtUserReturn.setText(user.getName() + " " + user.getSurname());
+                searchedUser = user;
+                txtUserReturnCode.setDisable(true);
+            }
+        }
+    }
+
+    @FXML
+    void onBookSearchButtonClick(MouseEvent event) throws Exception {
+        if (!txtBookReturnCode.getText().isEmpty()) {
+            BooksEntity book;
+            System.out.println(db.GetObject(txtBookReturnCode.getText(), "isbn").size());
+            if (db.GetObject(txtBookReturnCode.getText(), "isbn").size() < 1) {
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("User not found.");
+                alertDialog.show();
+            } else {
+                book = (BooksEntity) db.GetObject(txtBookReturnCode.getText(), "isbn").get(0);
+                txtBookReturnTitle.setText(book.getTitle());
+                searchedBook = book;
+                txtBookReturnCode.setDisable(true);
+            }
+        }
+    }
+
+    @FXML
+    void OnAddBorrowReturnButtonClicked(MouseEvent event) throws Exception {
+        if (lblMenuTitle.getText().equals("Borrow Menu"))
+            state = InterfaceStatus.BORROW_ADD;
+        setMainGridVisibility(state);
+        disableFields(false, state);
+    }
+
 
     @FXML
     void onCheckButtonClicked(MouseEvent event) throws Exception {
@@ -145,7 +214,7 @@ public class InterfaceController {
         if (state == InterfaceStatus.USER_EDIT) {
             UsersEntity user;
             if (!txtCode.getText().isEmpty()) {
-                user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
+                user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
                 user.setName(txtName.getText());
                 user.setSurname(txtSurname.getText());
                 if (dpBirthdate.getValue() != null) {
@@ -160,18 +229,17 @@ public class InterfaceController {
         if (state == InterfaceStatus.USER_SEARCH) {
             if (!txtCode.getText().isEmpty()) {
                 UsersEntity user;
-                if (db.GetObject(txtCode.getText(), "code", state.toString()).size() < 1) {
+                if (db.GetObject(txtCode.getText(), "code").size() < 1) {
                     alertDialog.setAlertType(Alert.AlertType.WARNING);
                     alertDialog.setContentText("User not found.");
                     alertDialog.show();
                 }
                 else {
-                    user = (UsersEntity) db.GetObject(txtCode.getText(), "code", state.toString()).get(0);
+                    user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
                     txtName.setText(String.valueOf(user.getName()));
                     txtSurname.setText(user.getSurname());
                     if (user.getBirthdate() != null) {
-                        LocalDate date = user.getBirthdate().toLocalDate();
-                        dpBirthdate.setValue(date);
+                        dpBirthdate.setValue(user.getBirthdate().toLocalDate());
                     }
                     //successfulTransactionAlert(true, state);
                 }
@@ -202,7 +270,7 @@ public class InterfaceController {
         if (state == InterfaceStatus.BOOK_EDIT) {
             BooksEntity book;
             if (!txtIsbn.getText().isEmpty()) {
-                book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
+                book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
                 book.setTitle(txtTitle.getText());
                 book.setCopies((int) copiesSlider.getValue());
                 book.setPublisher(txtPublisher.getText());
@@ -217,13 +285,13 @@ public class InterfaceController {
         if (state == InterfaceStatus.BOOK_SEARCH) {
             if (!txtIsbn.getText().isEmpty()) {
                 BooksEntity book;
-                if (db.GetObject(txtIsbn.getText(), "isbn", state.toString()).size() < 1) {
+                if (db.GetObject(txtIsbn.getText(), "isbn").size() < 1) {
                     alertDialog.setAlertType(Alert.AlertType.WARNING);
                     alertDialog.setContentText("Book not found.");
                     alertDialog.show();
                 }
                 else {
-                    book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn", state.toString()).get(0);
+                    book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
                     txtIsbn.setText(String.valueOf(book.getIsbn()));
                     txtTitle.setText(book.getTitle());
                     copiesSlider.setValue(book.getCopies());
@@ -238,6 +306,26 @@ public class InterfaceController {
                 alertDialog.show();
             }
             state = InterfaceStatus.BOOK_IDLE;
+        }
+        if (state == InterfaceStatus.BORROW_ADD) {
+            if (!txtBookReturnCode.getText().isEmpty() && !txtUserReturnCode.getText().isEmpty()) {
+                if (searchedUser.getLentBooks().size() < 3 || searchedBook.getCopies() >= 1) {
+                    alertDialog.setAlertType(Alert.AlertType.WARNING);
+                    alertDialog.show();
+                }
+                else {
+                    LendingEntity lending = new LendingEntity();
+                    lending.setLendingdate(Date.valueOf(LocalDate.now()));
+                    lending.setReturningdate(null);
+                    lending.setBook(searchedBook);
+                    lending.setBorrower(searchedUser);
+                    db.Insert(lending);
+                    int copies = searchedBook.getCopies() - 1;
+                    searchedBook.setCopies(copies);
+                }
+            }
+            clearFields();
+            state = InterfaceStatus.BORROW_IDLE;
         }
         //clearFields();
         disableFields(true, state);
@@ -292,8 +380,16 @@ public class InterfaceController {
 
     @FXML
     void onEditButtonClicked(MouseEvent event) {
-        if (userMenu.isVisible() && !txtCode.getText().isEmpty())
-            state = InterfaceStatus.USER_EDIT;
+        if (userMenu.isVisible()) {
+            if (!txtCode.getText().isEmpty())
+                state = InterfaceStatus.USER_EDIT;
+            else {
+                state = InterfaceStatus.USER_IDLE;
+                alertDialog.setAlertType(Alert.AlertType.WARNING);
+                alertDialog.setContentText("Code field cannot be empty.");
+                alertDialog.show();
+            }
+        }
         if (bookMenu.isVisible())
             state = InterfaceStatus.BOOK_EDIT;
         setMainGridVisibility(state);
@@ -335,13 +431,13 @@ public class InterfaceController {
                 bookMenu.setVisible(true);
                 bottomSaveCancel.setVisible(true);
             }
-            case BORROW_IDLE -> {
-                borrowMenu.setVisible(true);
-                bottomPanelAdd.setVisible(true);
-            }
-            case RETURN_IDLE -> {
+            case RETURN_IDLE, BORROW_IDLE -> {
                 returnMenu.setVisible(true);
                 bottomPanelAdd.setVisible(true);
+            }
+            case BORROW_ADD, RETURN_ADD -> {
+                returnMenu.setVisible(true);
+                bottomSaveCancel.setVisible(true);
             }
         }
     }
@@ -349,7 +445,6 @@ public class InterfaceController {
     void hideGrids() {
          userMenu.setVisible(false);
          bookMenu.setVisible(false);
-         borrowMenu.setVisible(false);
          returnMenu.setVisible(false);
          bottomPanelMenu.setVisible(false);
          bottomSaveCancel.setVisible(false);
@@ -400,9 +495,12 @@ public class InterfaceController {
                 txtOutline.setDisable(disable);
                 copiesSlider.setDisable(disable);
             }
+            case BORROW_IDLE, BORROW_ADD -> {
+                txtBookReturnCode.setDisable(disable);
+                txtUserReturnCode.setDisable(disable);
+            }
         }
     }
-
     void clearFields() {
         txtCode.setText("");
         txtName.setText("");
@@ -414,5 +512,11 @@ public class InterfaceController {
         txtOutline.setText("");
         copiesSlider.adjustValue(0);
         dpBirthdate.getEditor().clear();
+        txtBookReturnCode.clear();
+        txtUserReturn.clear();
+        txtBookReturnTitle.clear();
+        txtUserReturnCode.clear();
+        searchedBook = null;
+        searchedUser = null;
     }
 }
