@@ -12,6 +12,7 @@ public class ReservationsEntity {
     private UsersEntity borrower;
     private BooksEntity book;
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
     public int getId() {

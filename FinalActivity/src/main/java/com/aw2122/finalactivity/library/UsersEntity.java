@@ -79,7 +79,7 @@ public class UsersEntity {
         return Objects.hash(code, name, surname, birthdate, fined);
     }
 
-    @OneToMany(mappedBy = "borrower")
+    @OneToMany(mappedBy = "borrower", fetch = FetchType.EAGER)
     public List<LendingEntity> getLentBooks() {
         return lentBooks;
     }
@@ -88,7 +88,7 @@ public class UsersEntity {
         this.lentBooks = lentBooks;
     }
 
-    @OneToMany(mappedBy = "borrower")
+    @OneToMany(mappedBy = "borrower", fetch = FetchType.EAGER)
     public List<ReservationsEntity> getReservedBooks() {
         return reservedBooks;
     }

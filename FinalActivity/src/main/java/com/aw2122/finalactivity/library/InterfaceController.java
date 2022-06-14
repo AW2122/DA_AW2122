@@ -6,23 +6,23 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
+import org.hibernate.SessionFactory;
 
 import java.sql.Date;
 import java.time.LocalDate;
 
 public class InterfaceController {
+    protected SessionFactory sessionFactory;
 
     DatabaseController db = new DatabaseController();
 
     Alert alertDialog = new Alert(Alert.AlertType.NONE);
 
-    //String state;
     InterfaceStatus state;
 
     UsersEntity searchedUser;
     BooksEntity searchedBook;
-
-    // enum estados if state ==
 
     @FXML
     private ImageView addButton;
@@ -182,6 +182,7 @@ public class InterfaceController {
                 alertDialog.show();
             } else {
                 book = (BooksEntity) db.GetObject(txtBookReturnCode.getText(), "isbn").get(0);
+                txtBookReturnCode.setText(book.getIsbn());
                 txtBookReturnTitle.setText(book.getTitle());
                 searchedBook = book;
                 txtBookReturnCode.setDisable(true);
@@ -193,6 +194,8 @@ public class InterfaceController {
     void OnAddBorrowReturnButtonClicked(MouseEvent event) throws Exception {
         if (lblMenuTitle.getText().equals("Borrow Menu"))
             state = InterfaceStatus.BORROW_ADD;
+        if (lblMenuTitle.getText().equals("Return Menu"))
+            state = InterfaceStatus.RETURN_ADD;
         setMainGridVisibility(state);
         disableFields(false, state);
     }
@@ -208,7 +211,10 @@ public class InterfaceController {
             if (dpBirthdate.getValue() != null) {
                 user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
             }
-            successfulTransactionAlert(db.Insert(user), state);
+            if (db.Insert(user))
+                setAlertDialog("User successfully added!", Alert.AlertType.INFORMATION);
+            else
+                setAlertDialog("User could not be added", Alert.AlertType.ERROR);
             state = InterfaceStatus.USER_IDLE;
         }
         if (state == InterfaceStatus.USER_EDIT) {
@@ -221,7 +227,7 @@ public class InterfaceController {
                     user.setBirthdate(Date.valueOf(dpBirthdate.getValue()));
                 }
                 db.Update(user);
-                successfulTransactionAlert(true, state);
+                setAlertDialog("User updated correctly.", Alert.AlertType.INFORMATION);
             }
             clearFields();
             state = InterfaceStatus.USER_IDLE;
@@ -230,23 +236,18 @@ public class InterfaceController {
             if (!txtCode.getText().isEmpty()) {
                 UsersEntity user;
                 if (db.GetObject(txtCode.getText(), "code").size() < 1) {
-                    alertDialog.setAlertType(Alert.AlertType.WARNING);
-                    alertDialog.setContentText("User not found.");
-                    alertDialog.show();
-                }
-                else {
+                    setAlertDialog("User not found.", Alert.AlertType.ERROR);
+                } else {
                     user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
                     txtName.setText(String.valueOf(user.getName()));
                     txtSurname.setText(user.getSurname());
                     if (user.getBirthdate() != null) {
                         dpBirthdate.setValue(user.getBirthdate().toLocalDate());
                     }
-                    //successfulTransactionAlert(true, state);
+                    setAlertDialog("User found!", Alert.AlertType.INFORMATION);
                 }
             } else {
-                alertDialog.setAlertType(Alert.AlertType.WARNING);
-                alertDialog.setContentText("Code field cannot be empty.");
-                alertDialog.show();
+                setAlertDialog("Code field cannot be empty.", Alert.AlertType.WARNING);
             }
             state = InterfaceStatus.USER_IDLE;
         }
@@ -259,11 +260,9 @@ public class InterfaceController {
                 book.setCover(txtCover.getText());
                 book.setOutline(txtOutline.getText());
                 book.setPublisher(txtPublisher.getText());
-                successfulTransactionAlert(db.Insert(book), state);
+                setAlertDialog("Book successfully added!", Alert.AlertType.INFORMATION);
             } else {
-                alertDialog.setAlertType(Alert.AlertType.WARNING);
-                alertDialog.setContentText("ISBN field cannot be empty.");
-                alertDialog.show();
+                setAlertDialog("ISBN field cannot be empty.", Alert.AlertType.WARNING);
             }
             state = InterfaceStatus.BOOK_IDLE;
         }
@@ -277,7 +276,7 @@ public class InterfaceController {
                 book.setOutline(txtOutline.getText());
                 book.setCover(txtCover.getText());
                 db.Update(book);
-                successfulTransactionAlert(true, state);
+                setAlertDialog("Book updated correctly.", Alert.AlertType.INFORMATION);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -286,11 +285,8 @@ public class InterfaceController {
             if (!txtIsbn.getText().isEmpty()) {
                 BooksEntity book;
                 if (db.GetObject(txtIsbn.getText(), "isbn").size() < 1) {
-                    alertDialog.setAlertType(Alert.AlertType.WARNING);
-                    alertDialog.setContentText("Book not found.");
-                    alertDialog.show();
-                }
-                else {
+                    setAlertDialog("Book not found.", Alert.AlertType.ERROR);
+                } else {
                     book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
                     txtIsbn.setText(String.valueOf(book.getIsbn()));
                     txtTitle.setText(book.getTitle());
@@ -298,62 +294,91 @@ public class InterfaceController {
                     txtPublisher.setText(book.getPublisher());
                     txtOutline.setText(book.getOutline());
                     txtCover.setText(book.getCover());
-                    successfulTransactionAlert(true, state);
+                    setAlertDialog("Book found!", Alert.AlertType.INFORMATION);
                 }
             } else {
-                alertDialog.setAlertType(Alert.AlertType.WARNING);
-                alertDialog.setContentText("ISBN field cannot be empty.");
-                alertDialog.show();
+                setAlertDialog("ISBN field cannot be empty.", Alert.AlertType.WARNING);
             }
             state = InterfaceStatus.BOOK_IDLE;
         }
         if (state == InterfaceStatus.BORROW_ADD) {
             if (!txtBookReturnCode.getText().isEmpty() && !txtUserReturnCode.getText().isEmpty()) {
-                if (searchedUser.getLentBooks().size() < 3 || searchedBook.getCopies() >= 1) {
-                    alertDialog.setAlertType(Alert.AlertType.WARNING);
-                    alertDialog.show();
-                }
-                else {
-                    LendingEntity lending = new LendingEntity();
-                    lending.setLendingdate(Date.valueOf(LocalDate.now()));
-                    lending.setReturningdate(null);
-                    lending.setBook(searchedBook);
-                    lending.setBorrower(searchedUser);
-                    db.Insert(lending);
-                    int copies = searchedBook.getCopies() - 1;
-                    searchedBook.setCopies(copies);
+                if (searchedUser.getLentBooks().size() >= 3) {
+                    setAlertDialog("This user has already borrowed 3 books. The user must return a book before " +
+                            "they can borrow another one.", Alert.AlertType.INFORMATION);
+                } else if (searchedBook.getCopies() < 1) {
+                    ButtonType result = setAlertDialog("There are currently no copies left of this book. " +
+                            "Would you like to reserve it?", Alert.AlertType.CONFIRMATION);
+                    if (result == ButtonType.OK) {
+                        ReservationsEntity reservation = new ReservationsEntity();
+                        reservation.setBook(searchedBook);
+                        reservation.setBorrower(searchedUser);
+                        reservation.setDate(Date.valueOf(LocalDate.now()));
+                        db.postReservation(reservation);
+                    }
+                } else if (searchedUser.getFined() != null && searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
+                    setAlertDialog("User is still fined.", Alert.AlertType.WARNING);
+
+                } else {
+                    searchedUser.setFined(null);
+                    db.Update(searchedUser);
+                    if (searchedBook.getReservedBy().isEmpty() || searchedBook.getReservedBy().get(0).getBorrower().equals(searchedUser)) {
+                        if (!searchedBook.getReservedBy().isEmpty()) {
+                            searchedBook.getReservedBy().remove(0);
+                            db.Update(searchedBook);
+                        }
+                        LendingEntity lending = new LendingEntity();
+                        lending.setLendingdate(Date.valueOf(LocalDate.now()));
+                        lending.setReturningdate(null);
+                        lending.setBook(searchedBook);
+                        lending.setBorrower(searchedUser);
+                        db.Insert(lending);
+                        int copies = searchedBook.getCopies() - 1;
+                        searchedBook.setCopies(copies);
+                        db.Update(searchedBook);
+                        setAlertDialog("Book borrowed successfully.", Alert.AlertType.INFORMATION);
+                    } else {
+                        setAlertDialog("This book is reserved with priority.", Alert.AlertType.INFORMATION);
+                    }
                 }
             }
             clearFields();
             state = InterfaceStatus.BORROW_IDLE;
         }
-        //clearFields();
+        if (state == InterfaceStatus.RETURN_ADD) {
+            if (txtBookReturnCode.getText().isEmpty() && txtUserReturnCode.getText().isEmpty()) {
+                setAlertDialog("Fields cannot be empty!", Alert.AlertType.WARNING);
+            } else {
+                LendingEntity lending = db.getLending(searchedUser, searchedBook);
+                lending.setReturningdate(Date.valueOf(LocalDate.now()));
+                db.Update(lending);
+                int copies = searchedBook.getCopies() + 1;
+                searchedBook.setCopies(copies);
+                db.Update(searchedBook);
+                if (LocalDate.now().isAfter(lending.getLendingdate().toLocalDate().plusDays(14))) {
+                    searchedUser.setFined(Date.valueOf(LocalDate.now()));
+                    db.Update(searchedUser);
+                }
+                if (!searchedBook.getReservedBy().isEmpty()) {
+                    setAlertDialog(searchedBook.getReservedBy().get(0).getBorrower().getName() + " " +
+                            searchedBook.getReservedBy().get(0).getBorrower().getSurname() + " is next in line on the " +
+                            "reservations list. Send a notification.", Alert.AlertType.INFORMATION );
+                }
+            }
+            clearFields();
+            state = InterfaceStatus.RETURN_IDLE;
+        }
         disableFields(true, state);
         setMainGridVisibility(state);
     }
 
-    private void successfulTransactionAlert(boolean success, InterfaceStatus state) {
-        if (success) {
-            alertDialog.setAlertType(Alert.AlertType.INFORMATION);
-            switch (state) {
-                case USER_ADD -> alertDialog.setContentText("User successfully added.");
-                case USER_EDIT -> alertDialog.setContentText("User successfully edited.");
-                case BOOK_ADD -> alertDialog.setContentText("Book successfully added.");
-                case BOOK_EDIT -> alertDialog.setContentText("Book successfully edited.");
-                case USER_SEARCH -> alertDialog.setContentText("User found.");
-            }
-        } else {
-            alertDialog.setAlertType(Alert.AlertType.WARNING);
-            switch (state) {
-                case USER_ADD -> alertDialog.setContentText("User could not be added.");
-                case USER_EDIT -> alertDialog.setContentText("User could not be edited.");
-                case BOOK_ADD -> alertDialog.setContentText("Book could not be added.");
-                case BOOK_EDIT -> alertDialog.setContentText("Book could not be edited.");
-                case USER_SEARCH -> alertDialog.setContentText("User could not be found.");
-                case BOOK_SEARCH -> alertDialog.setContentText("Book could not be found.");
-            }
-        }
-        alertDialog.show();
+    private ButtonType setAlertDialog(String message, Alert.AlertType alertType) {
+        Text text = new Text(message);
+        text.setWrappingWidth(100);
+        alertDialog.setAlertType(alertType);
+        alertDialog.getDialogPane().setContent(text);
+        alertDialog.showAndWait();
+        return alertDialog.getResult();
     }
 
     @FXML
@@ -443,12 +468,12 @@ public class InterfaceController {
     }
 
     void hideGrids() {
-         userMenu.setVisible(false);
-         bookMenu.setVisible(false);
-         returnMenu.setVisible(false);
-         bottomPanelMenu.setVisible(false);
-         bottomSaveCancel.setVisible(false);
-         bottomPanelAdd.setVisible(false);
+        userMenu.setVisible(false);
+        bookMenu.setVisible(false);
+        returnMenu.setVisible(false);
+        bottomPanelMenu.setVisible(false);
+        bottomSaveCancel.setVisible(false);
+        bottomPanelAdd.setVisible(false);
     }
 
     void disableFields(Boolean disable, InterfaceStatus state) {
@@ -465,7 +490,7 @@ public class InterfaceController {
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
             }
-            case  USER_EDIT -> {
+            case USER_EDIT -> {
                 txtCode.setDisable(true);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
@@ -495,12 +520,13 @@ public class InterfaceController {
                 txtOutline.setDisable(disable);
                 copiesSlider.setDisable(disable);
             }
-            case BORROW_IDLE, BORROW_ADD -> {
+            case BORROW_IDLE, BORROW_ADD, RETURN_ADD, RETURN_IDLE -> {
                 txtBookReturnCode.setDisable(disable);
                 txtUserReturnCode.setDisable(disable);
             }
         }
     }
+
     void clearFields() {
         txtCode.setText("");
         txtName.setText("");

@@ -5,6 +5,7 @@ module com.aw2122.finalactivity.library {
     requires java.persistence;
     requires org.hibernate.orm.core;
     requires java.naming;
+    requires android.json;
 
 
     opens com.aw2122.finalactivity.library to javafx.fxml;

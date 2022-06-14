@@ -41,4 +41,13 @@ public class HibernateCRUD<T> {
         transaction.commit();
         session.close();
     }
+
+    public LendingEntity GetLending(UsersEntity user, BooksEntity book) throws Exception {
+        Query<LendingEntity> query;
+        Session session = sessionFactory.openSession();
+        query = session.createQuery("from " + entity + " where book.isbn = '" + book.getIsbn() + "' and borrower.code = '" + user.getCode() + "'");
+        LendingEntity lending = query.getSingleResult();
+        session.close();
+        return lending;
+    }
 }

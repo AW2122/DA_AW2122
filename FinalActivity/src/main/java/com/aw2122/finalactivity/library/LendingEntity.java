@@ -1,11 +1,14 @@
 package com.aw2122.finalactivity.library;
 
+import org.hibernate.annotations.Where;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "lending", schema = "public", catalog = "Library")
+@Where(clause = "returningdate is null")
 public class LendingEntity {
     private int id;
     private Date lendingdate;
@@ -13,6 +16,7 @@ public class LendingEntity {
     private BooksEntity book;
     private UsersEntity borrower;
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id", nullable = false)
     public int getId() {
