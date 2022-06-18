@@ -80,14 +80,7 @@ public class DatabaseController {
         }
 
         public LendingEntity getLending(UsersEntity user, BooksEntity book) throws Exception {
-                LendingEntity lending = null;
-                try {
-                        lending = lendingEntityCRUD.GetLending(user, book);
-
-                } catch (Exception e){
-
-                }
-                return lending;
+                return lendingEntityCRUD.GetLending(user, book);
         }
 
         public void postReservation(ReservationsEntity reservation) throws Exception {

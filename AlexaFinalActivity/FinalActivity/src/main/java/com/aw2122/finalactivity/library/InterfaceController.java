@@ -319,8 +319,8 @@ public class InterfaceController {
         if (state == InterfaceStatus.BORROW_ADD) {
             if (!txtBookReturnCode.getText().isEmpty() && !txtUserReturnCode.getText().isEmpty()) {
                 if (searchedUser.getLentBooks().size() >= 3) {
-                    setAlertDialog("This user has already borrowed 3 books", "The user must return a " +
-                            "book before they can borrow another.", Alert.AlertType.INFORMATION);
+                    setAlertDialog("This user has already borrowed 3 books", "The user must return a book before " +
+                            "they can borrow another one.", Alert.AlertType.INFORMATION);
                 } else if (searchedBook.getCopies() < 1) {
                     ButtonType result = setAlertDialog("There are currently no copies left of this book. ",
                             "Would you like to reserve it?", Alert.AlertType.CONFIRMATION);
@@ -331,14 +331,13 @@ public class InterfaceController {
                         reservation.setDate(Date.valueOf(LocalDate.now()));
                         db.postReservation(reservation);
                     }
-                } else if (searchedUser.getFined() != null && searchedUser.getFined().toLocalDate().plusDays(7).isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
-                    setAlertDialog("User is still fined", "", Alert.AlertType.WARNING);
-                    //searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate().plusDays(7);
+                } else if (searchedUser.getFined() != null &&
+                        searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
+                    setAlertDialog("User is still fined", "Fined until " +
+                            searchedUser.getFined().toLocalDate().plusDays(14), Alert.AlertType.WARNING);
 
-                } else if (db.getLending(searchedUser, searchedBook) != null &&
-                        searchedUser.getLentBooks().contains(db.getLending(searchedUser, searchedBook))) {
-                    setAlertDialog("Already borrowed", "This book has already been borrowed " +
-                            "by this user.", Alert.AlertType.ERROR);
+                } else if (searchedUser.getLentBooks().contains(new LendingEntity().getBook().equals(searchedBook.getIsbn()))) {
+                    setAlertDialog("already borrowed", "", Alert.AlertType.ERROR);
                 } else {
                     searchedUser.setFined(null);
                     db.Update(searchedUser);
@@ -371,7 +370,7 @@ public class InterfaceController {
             if (txtBookReturnCode.getText().isEmpty() && txtUserReturnCode.getText().isEmpty()) {
                 setAlertDialog("Empty fields", "The required fields cannot be empty.",
                         Alert.AlertType.WARNING);
-            } else if (db.getLending(searchedUser, searchedBook) != null){
+            } else {
                 LendingEntity lending = db.getLending(searchedUser, searchedBook);
                 lending.setReturningdate(Date.valueOf(LocalDate.now()));
                 db.Update(lending);
@@ -381,17 +380,12 @@ public class InterfaceController {
                 if (LocalDate.now().isAfter(lending.getLendingdate().toLocalDate().plusDays(14))) {
                     searchedUser.setFined(Date.valueOf(LocalDate.now()));
                     db.Update(searchedUser);
-                    setAlertDialog("User fined", "The user has been fined due to late return date.",
-                            Alert.AlertType.INFORMATION);
                 }
                 if (!searchedBook.getReservedBy().isEmpty()) {
                     setAlertDialog("Notify user", searchedBook.getReservedBy().get(0).getBorrower().getName() + " " +
                             searchedBook.getReservedBy().get(0).getBorrower().getSurname() + " is next in line on the " +
                             "reservations list.", Alert.AlertType.INFORMATION);
                 }
-                setAlertDialog("Book returned correctly", "", Alert.AlertType.INFORMATION);
-            } else {
-                setAlertDialog("No records", "This book is not currently borrowed by this user.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.RETURN_IDLE;

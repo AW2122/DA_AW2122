@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.aw2122.finalactivity.library.InterfaceController">
+    <children>
+        <GridPane fx:id="topPanel" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <ImageView fx:id="userButton" fitHeight="45.0" fitWidth="35.0" onMouseClicked="#onUserButtonClick" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@person_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="bookButton" fitHeight="45.0" fitWidth="35.0" onMouseClicked="#onBookButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                    <image>
+                        <Image url="@auto_stories_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="returnButton" fitHeight="40.0" fitWidth="35.0" onMouseClicked="#onReturnButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@download_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="borrowButton" fitHeight="40.0" fitWidth="35.0" layoutX="221.0" layoutY="8.0" onMouseClicked="#onBorrowButtonClick" pickOnBounds="true" preserveRatio="true" rotate="180.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@download_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="exitButton" fitHeight="40.0" fitWidth="35.0" layoutX="326.0" layoutY="8.0" onMouseClicked="#onExitButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@logout_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </GridPane>
+        <GridPane fx:id="bottomPanelMenu" layoutY="460.0" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <ImageView fx:id="searchButton" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onSearchButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@search_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="addButton" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onAddButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@add_circle_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="editButton" fitHeight="35.0" fitWidth="35.0" onMousePressed="#onEditButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@edit_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </GridPane>
+        <GridPane fx:id="bottomSaveCancel" layoutY="479.0" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <ImageView fx:id="btnCheck" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onCheckButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@check_circle_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="btnCancel" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onCancelButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@cancel_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </GridPane>
+        <GridPane fx:id="bottomPanelAdd" layoutY="467.0" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <ImageView fx:id="btnAddBorrowReturn" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#OnAddBorrowReturnButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <image>
+                        <Image url="@add_circle_FILL0_wght400_GRAD0_opsz48.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </GridPane>
+        <GridPane fx:id="userMenu" layoutY="86.0" prefHeight="387.0" prefWidth="536.0" style="-fx-background-color: #1177dd;" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" percentWidth="0.0" prefWidth="92.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="418.00000762939453" minWidth="10.0" prefWidth="418.00000762939453" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="Code">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtCode" disable="true" prefHeight="25.0" prefWidth="239.0" GridPane.columnIndex="1" />
+                <Label alignment="CENTER" text="Name" GridPane.rowIndex="1">
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <Label text="Surname" GridPane.rowIndex="2">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <Label text="Birthdate" GridPane.rowIndex="3">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtName" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <TextField fx:id="txtSurname" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <DatePicker fx:id="dpBirthdate" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            </children>
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+        </GridPane>
+        <GridPane fx:id="bookMenu" layoutY="84.0" prefHeight="379.0" prefWidth="536.0" style="-fx-background-color: #1177dd;" visible="false" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" percentWidth="0.0" prefWidth="92.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="418.00000762939453" minWidth="10.0" prefWidth="418.00000762939453" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="ISBN">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtIsbn" disable="true" prefHeight="25.0" prefWidth="239.0" GridPane.columnIndex="1" />
+                <Label alignment="CENTER" text="Title" GridPane.rowIndex="1">
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <Label text="Copies" GridPane.rowIndex="2">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <Label text="Publisher" GridPane.rowIndex="5">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtTitle" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Slider fx:id="copiesSlider" disable="true" majorTickUnit="1.0" max="10.0" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Label text="Cover" GridPane.rowIndex="3">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtCover" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <TextField fx:id="txtOutline" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label text="Outline" GridPane.rowIndex="4">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtPublisher" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            </children>
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+            <opaqueInsets>
+                <Insets />
+            </opaqueInsets>
+        </GridPane>
+        <GridPane fx:id="returnMenu" layoutY="84.0" prefHeight="387.0" prefWidth="445.0" style="-fx-background-color: #1177dd;" visible="false" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="86.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" percentWidth="0.0" prefWidth="92.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="418.00000762939453" minWidth="10.0" prefWidth="296.6666666666667" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="418.00000762939453" minWidth="10.0" prefWidth="71.33333333333331" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="User" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtUserReturnCode" disable="true" prefHeight="25.0" prefWidth="262.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                <Label text="Book" GridPane.rowIndex="3" GridPane.rowSpan="2">
+                    <padding>
+                        <Insets left="20.0" />
+                    </padding>
+                </Label>
+                <TextField fx:id="txtBookReturnCode" disable="true" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                <TextField fx:id="txtUserReturn" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <TextField fx:id="txtBookReturnTitle" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label fx:id="lblMenuTitle" text="Return menu" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            <ImageView fx:id="btnUserSearch" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onUserSearchButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@search_FILL0_wght400_GRAD0_opsz48.png" />
+               </image></ImageView>
+            <ImageView fx:id="btnBookSearch" fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onBookSearchButtonClick" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@search_FILL0_wght400_GRAD0_opsz48.png" />
+               </image></ImageView>
+            </children>
+            <padding>
+                <Insets left="20.0" right="20.0" />
+            </padding>
+        </GridPane>
+    </children>
+</AnchorPane>
