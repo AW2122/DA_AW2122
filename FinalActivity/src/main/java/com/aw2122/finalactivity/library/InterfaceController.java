@@ -2,25 +2,29 @@ package com.aw2122.finalactivity.library;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.PersistenceException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 public class InterfaceController {
-    protected SessionFactory sessionFactory;
-
     DatabaseController db = new DatabaseController();
-
     InterfaceStatus state;
-
+    Object selectedObject;
     UsersEntity searchedUser;
     BooksEntity searchedBook;
 
@@ -160,11 +164,17 @@ public class InterfaceController {
             UsersEntity user;
             if (db.GetObject(txtUserReturnCode.getText(), "code").size() < 1) {
                 setAlertDialog("User not found", "", Alert.AlertType.WARNING);
+                clearFields();
             } else {
-                user = (UsersEntity) db.GetObject(txtUserReturnCode.getText(), "code").get(0);
-                txtUserReturn.setText(user.getName() + " " + user.getSurname());
-                searchedUser = user;
-                txtUserReturnCode.setDisable(true);
+                selectedObject = openModalWindow(db.GetObject(txtUserReturnCode.getText(), "code"));
+                if (selectedObject != null) {
+                    user = (UsersEntity) selectedObject;
+                    txtUserReturnCode.setText(user.getCode());
+                    txtUserReturn.setText(user.getName() + " " + user.getSurname());
+                    searchedUser = user;
+                    txtUserReturnCode.setDisable(true);
+                } else
+                    clearFields();
             }
         }
     }
@@ -173,15 +183,19 @@ public class InterfaceController {
     void onBookSearchButtonClick(MouseEvent event) throws Exception {
         if (!txtBookReturnCode.getText().isEmpty()) {
             BooksEntity book;
-            System.out.println(db.GetObject(txtBookReturnCode.getText(), "isbn").size());
             if (db.GetObject(txtBookReturnCode.getText(), "isbn").size() < 1) {
                 setAlertDialog("Book not found", "", Alert.AlertType.WARNING);
+                clearFields();
             } else {
-                book = (BooksEntity) db.GetObject(txtBookReturnCode.getText(), "isbn").get(0);
-                txtBookReturnCode.setText(book.getIsbn());
-                txtBookReturnTitle.setText(book.getTitle());
-                searchedBook = book;
-                txtBookReturnCode.setDisable(true);
+                selectedObject = openModalWindow(db.GetObject(txtBookReturnCode.getText(), "isbn"));
+                if (selectedObject != null) {
+                    book = (BooksEntity) selectedObject;
+                    txtBookReturnCode.setText(book.getIsbn());
+                    txtBookReturnTitle.setText(book.getTitle());
+                    searchedBook = book;
+                    txtBookReturnCode.setDisable(true);
+                } else
+                    clearFields();
             }
         }
     }
@@ -242,14 +256,20 @@ public class InterfaceController {
                 UsersEntity user;
                 if (db.GetObject(txtCode.getText(), "code").size() < 1) {
                     setAlertDialog("User not found", "", Alert.AlertType.ERROR);
+                    clearFields();
                 } else {
-                    user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
-                    txtName.setText(String.valueOf(user.getName()));
-                    txtSurname.setText(user.getSurname());
-                    if (user.getBirthdate() != null) {
-                        dpBirthdate.setValue(user.getBirthdate().toLocalDate());
+                    selectedObject = openModalWindow(db.GetObject(txtCode.getText(), "code"));
+                    if (selectedObject != null) {
+                        user = (UsersEntity) selectedObject;
+                        txtCode.setText(user.getCode());
+                        txtName.setText(user.getName());
+                        txtSurname.setText(user.getSurname());
+                        if (user.getBirthdate() != null) {
+                            dpBirthdate.setValue(user.getBirthdate().toLocalDate());
+                        }
+                    } else {
+                        clearFields();
                     }
-                    setAlertDialog("User found", "", Alert.AlertType.INFORMATION);
                 }
             } else {
                 setAlertDialog("Empty field", "Code field cannot be empty", Alert.AlertType.WARNING);
@@ -301,15 +321,20 @@ public class InterfaceController {
                 BooksEntity book;
                 if (db.GetObject(txtIsbn.getText(), "isbn").size() < 1) {
                     setAlertDialog("Book not found", "", Alert.AlertType.ERROR);
+                    clearFields();
                 } else {
-                    book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
-                    txtIsbn.setText(String.valueOf(book.getIsbn()));
-                    txtTitle.setText(book.getTitle());
-                    copiesSlider.setValue(book.getCopies());
-                    txtPublisher.setText(book.getPublisher());
-                    txtOutline.setText(book.getOutline());
-                    txtCover.setText(book.getCover());
-                    setAlertDialog("Book found", "", Alert.AlertType.INFORMATION);
+                    selectedObject = openModalWindow(db.GetObject(txtIsbn.getText(), "isbn"));
+                    if (selectedObject != null) {
+                        book = (BooksEntity) selectedObject;
+                        txtIsbn.setText(book.getIsbn());
+                        txtTitle.setText(book.getTitle());
+                        copiesSlider.setValue(book.getCopies());
+                        txtPublisher.setText(book.getPublisher());
+                        txtOutline.setText(book.getOutline());
+                        txtCover.setText(book.getCover());
+                    } else {
+                        clearFields();
+                    }
                 }
             } else {
                 setAlertDialog("Empty field", "The ISBN field cannot be empty.", Alert.AlertType.WARNING);
@@ -317,7 +342,7 @@ public class InterfaceController {
             state = InterfaceStatus.BOOK_IDLE;
         }
         if (state == InterfaceStatus.BORROW_ADD) {
-            if (!txtBookReturnCode.getText().isEmpty() && !txtUserReturnCode.getText().isEmpty()) {
+            if (!txtBookReturnTitle.getText().isEmpty() && !txtUserReturn.getText().isEmpty()) {
                 if (searchedUser.getLentBooks().size() >= 3) {
                     setAlertDialog("This user has already borrowed 3 books", "The user must return a " +
                             "book before they can borrow another.", Alert.AlertType.INFORMATION);
@@ -331,7 +356,9 @@ public class InterfaceController {
                         reservation.setDate(Date.valueOf(LocalDate.now()));
                         db.postReservation(reservation);
                     }
-                } else if (searchedUser.getFined() != null && searchedUser.getFined().toLocalDate().plusDays(7).isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
+                } else if (searchedUser.getFined() != null &&
+                        searchedUser.getFined().toLocalDate().plusDays(7)
+                                .isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
                     setAlertDialog("User is still fined", "", Alert.AlertType.WARNING);
                     //searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate().plusDays(7);
 
@@ -371,7 +398,7 @@ public class InterfaceController {
             if (txtBookReturnCode.getText().isEmpty() && txtUserReturnCode.getText().isEmpty()) {
                 setAlertDialog("Empty fields", "The required fields cannot be empty.",
                         Alert.AlertType.WARNING);
-            } else if (db.getLending(searchedUser, searchedBook) != null){
+            } else if (db.getLending(searchedUser, searchedBook) != null) {
                 LendingEntity lending = db.getLending(searchedUser, searchedBook);
                 lending.setReturningdate(Date.valueOf(LocalDate.now()));
                 db.Update(lending);
@@ -469,6 +496,21 @@ public class InterfaceController {
     @FXML
     void onExitButtonClick(MouseEvent event) {
         Platform.exit();
+    }
+
+    Object openModalWindow(List<Object> objectList) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("list-chooser.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root, 400, 355);
+        ((ListController) fxmlLoader.getController()).setObjectList(objectList);
+        ((ListController) fxmlLoader.getController()).setInterfaceController(this);
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.showAndWait();
+        return ((ListController) fxmlLoader.getController()).selectedObject;
     }
 
     void setMainGridVisibility(InterfaceStatus state) {

@@ -106,4 +106,9 @@ public class BooksEntity {
     public void setReservedBy(List<ReservationsEntity> reservedBy) {
         this.reservedBy = reservedBy;
     }
+
+    @Override
+    public String toString() {
+        return isbn + " - " + title;
+    }
 }

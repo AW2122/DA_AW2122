@@ -1,0 +1,45 @@
+package com.aw2122.finalactivity.library;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+
+import java.util.List;
+
+public class ListController {
+    @FXML
+    private ListView<Object> objectListView;
+    @FXML
+    private Button btnConfirm;
+    @FXML
+    private Button btnCancel;
+
+    Object selectedObject;
+    List<Object> objectList;
+    InterfaceController interfaceController;
+
+    public void setInterfaceController(InterfaceController interfaceController) {
+        this.interfaceController = interfaceController;
+    }
+
+    public void setObjectList(List<Object> objectList) {
+        this.objectList = objectList;
+        objectListView.getItems().addAll(FXCollections.observableList(objectList));
+    }
+
+    @FXML
+    void onConfirmClick(MouseEvent event) {
+        selectedObject = objectListView.getSelectionModel().getSelectedItem();
+        Stage stage = (Stage) objectListView.getScene().getWindow();
+        stage.close();
+    }
+
+    @FXML
+    void onCancelClick(MouseEvent event) {
+        Stage stage = (Stage) objectListView.getScene().getWindow();
+        stage.close();
+    }
+}
