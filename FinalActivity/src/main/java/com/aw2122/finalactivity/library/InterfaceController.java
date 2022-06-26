@@ -136,6 +136,11 @@ public class InterfaceController {
     @FXML
     private GridPane userMenu;
 
+    /**
+     * When the user clicks on any of the upper menu icons, the variable status changes to the enum value that
+     * corresponds to that icon.
+     * @param event
+     */
     @FXML
     void onUserButtonClick(MouseEvent event) {
         setMainGridVisibility(InterfaceStatus.USER_IDLE);
@@ -158,6 +163,13 @@ public class InterfaceController {
         lblMenuTitle.setText("Return Menu");
     }
 
+    /**
+     * This method checks that the text fields are not empty, and then uses the code value to search the database
+     * for a user with that code.
+     * @param event
+     * @throws Exception
+     */
+
     @FXML
     void onUserSearchButtonClick(MouseEvent event) throws Exception {
         if (!txtUserReturnCode.getText().isEmpty()) {
@@ -179,6 +191,12 @@ public class InterfaceController {
         }
     }
 
+    /**
+     *  This method checks that the text fields are not empty, and then uses the ISBN value to search the database
+     *  for a book with said ISBN.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void onBookSearchButtonClick(MouseEvent event) throws Exception {
         if (!txtBookReturnCode.getText().isEmpty()) {
@@ -200,6 +218,12 @@ public class InterfaceController {
         }
     }
 
+    /**
+     * When the add button is clicked and the menu that is visible is either the borrow or return menu, the status
+     * variable changes and the disabled fields become enabled.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void OnAddBorrowReturnButtonClicked(MouseEvent event) throws Exception {
         if (lblMenuTitle.getText().equals("Borrow Menu"))
@@ -210,7 +234,28 @@ public class InterfaceController {
         disableFields(false, state);
     }
 
-
+    /**
+     * When the check button is clicked, depending on the value of the status variable, the method will perform
+     * different tasks. With USER_ADD, the method will check if there are empty fields, and if there are none, it will
+     * call a method from the DatabaseController class that adds the user to the database. Same function for the
+     * BOOK_ADD status, but to add books.
+     * With USER_EDIT, the method will check for a code in the text field (user must perform a search first), looks
+     * for said code in the database, fills the other text fields with the object information, allows the user to change
+     * the values and finally commits the changes made to the database (calling the method from the DatabaseController).
+     * Same function for BOOK_EDIT, but using the ISBN and it will edit a book.
+     * With USER_SEARCH it checks for a code in the text field, passes that code to the DatabaseController method call
+     * to search for a user, and then fills the text fields with the retrieved information.
+     * Same function for BOOK_SEARCH.
+     * With BORROW_ADD, the method checks that the user has not borrowed more than 3 books at the same time, that there
+     * still are copies left of the book that the user is tring to borrow (if there are none left, the user will be
+     * prompted to make a reservation of said book), it checks if the user has a fine and if so, if the fine is still
+     * valid. If all these checks are passed, it will call the method from the DatabaseController to add a lending to
+     * the database (adding both the user and the book, and removing 1 from the book count).
+     * The RETURN_ADD checks if the user has borrowed the book that's specified in the text field, adds 1 to the book
+     * count, checks if more than 14 days have passed since the user borrowed it.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void onCheckButtonClicked(MouseEvent event) throws Exception {
         if (state == InterfaceStatus.USER_ADD) {
@@ -311,7 +356,7 @@ public class InterfaceController {
                 db.Update(book);
                 setAlertDialog("Book updated correctly", "", Alert.AlertType.INFORMATION);
             } else {
-                setAlertDialog("Empty fields", "ISBN field cannot be empty. HERE", Alert.AlertType.WARNING);
+                setAlertDialog("Empty fields", "ISBN field cannot be empty.", Alert.AlertType.WARNING);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -427,6 +472,14 @@ public class InterfaceController {
         setMainGridVisibility(state);
     }
 
+    /**
+     * When called it recieves a string for the header and one for the message, and also an alert dialog type and uses
+     * these parameters to create an AlertDialog.
+     * @param header
+     * @param message
+     * @param alertType
+     * @return
+     */
     private ButtonType setAlertDialog(String header, String message, Alert.AlertType alertType) {
         Alert alertDialog = new Alert(alertType);
         alertDialog.setHeaderText(header);
@@ -435,6 +488,10 @@ public class InterfaceController {
         return alertDialog.getResult();
     }
 
+    /**
+     * The cancel button, depending on the set state, will change the state value.
+     * @param event
+     */
     @FXML
     void onCancelButtonClicked(MouseEvent event) {
         switch (state) {
@@ -448,6 +505,10 @@ public class InterfaceController {
         clearFields();
     }
 
+    /**
+     * Depending on which menu is visible, it will change the state value to one or another.
+     * @param event
+     */
     @FXML
     void onAddButtonClicked(MouseEvent event) {
         clearFields();
@@ -459,6 +520,10 @@ public class InterfaceController {
         disableFields(false, state);
     }
 
+    /**
+     * Same as the Add button, but it checks that the code/ISBN fields are not empty.
+     * @param event
+     */
     @FXML
     void onEditButtonClicked(MouseEvent event) {
         if (userMenu.isVisible()) {
@@ -482,6 +547,10 @@ public class InterfaceController {
         disableFields(false, state);
     }
 
+    /**
+     * Depending on which menu is visible, it will change the state value to one or another.
+     * @param event
+     */
     @FXML
     void onSearchButtonClick(MouseEvent event) {
         clearFields();
@@ -498,6 +567,12 @@ public class InterfaceController {
         Platform.exit();
     }
 
+    /**
+     * This method opens a modal window where a user or book list is shown to choose a specific user/book.
+     * @param objectList
+     * @return
+     * @throws Exception
+     */
     Object openModalWindow(List<Object> objectList) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("list-chooser.fxml"));
         Parent root = fxmlLoader.load();
@@ -513,6 +588,10 @@ public class InterfaceController {
         return ((ListController) fxmlLoader.getController()).selectedObject;
     }
 
+    /**
+     * This method controls the visibility of the different menus by checking the state value.
+     * @param state
+     */
     void setMainGridVisibility(InterfaceStatus state) {
         hideGrids();
         switch (state) {
@@ -543,6 +622,9 @@ public class InterfaceController {
         }
     }
 
+    /**
+     * This method is used to hide all grids.
+     */
     void hideGrids() {
         userMenu.setVisible(false);
         bookMenu.setVisible(false);
@@ -552,6 +634,11 @@ public class InterfaceController {
         bottomPanelAdd.setVisible(false);
     }
 
+    /**
+     * This method controls which fields should be enabled/disabled depending on the state value.
+     * @param disable
+     * @param state
+     */
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
             case USER_ADD, USER_IDLE -> {
@@ -603,6 +690,9 @@ public class InterfaceController {
         }
     }
 
+    /**
+     * This method clears all fields.
+     */
     void clearFields() {
         txtCode.setText("");
         txtName.setText("");

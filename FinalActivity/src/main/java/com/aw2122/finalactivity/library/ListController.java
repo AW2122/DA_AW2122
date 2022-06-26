@@ -25,11 +25,19 @@ public class ListController {
         this.interfaceController = interfaceController;
     }
 
+    /**
+     * This method gets all items from the object list.
+     * @param objectList
+     */
     public void setObjectList(List<Object> objectList) {
         this.objectList = objectList;
         objectListView.getItems().addAll(FXCollections.observableList(objectList));
     }
 
+    /**
+     * When clicked, gets the selected item from the list and closes the window.
+     * @param event
+     */
     @FXML
     void onConfirmClick(MouseEvent event) {
         selectedObject = objectListView.getSelectionModel().getSelectedItem();
@@ -37,6 +45,10 @@ public class ListController {
         stage.close();
     }
 
+    /**
+     * This method closes the window.
+     * @param event
+     */
     @FXML
     void onCancelClick(MouseEvent event) {
         Stage stage = (Stage) objectListView.getScene().getWindow();
