@@ -176,7 +176,7 @@ public class InterfaceController {
             UsersEntity user;
             if (db.GetObject(txtUserReturnCode.getText(), "code").size() < 1) {
                 setAlertDialog("User not found", "", Alert.AlertType.WARNING);
-                clearFields();
+                txtBookReturnCode.clear();
             } else {
                 selectedObject = openModalWindow(db.GetObject(txtUserReturnCode.getText(), "code"));
                 if (selectedObject != null) {
@@ -186,7 +186,7 @@ public class InterfaceController {
                     searchedUser = user;
                     txtUserReturnCode.setDisable(true);
                 } else
-                    clearFields();
+                    txtBookReturnCode.clear();
             }
         }
     }
@@ -203,7 +203,7 @@ public class InterfaceController {
             BooksEntity book;
             if (db.GetObject(txtBookReturnCode.getText(), "isbn").size() < 1) {
                 setAlertDialog("Book not found", "", Alert.AlertType.WARNING);
-                clearFields();
+                txtBookReturnCode.clear();
             } else {
                 selectedObject = openModalWindow(db.GetObject(txtBookReturnCode.getText(), "isbn"));
                 if (selectedObject != null) {
@@ -213,7 +213,7 @@ public class InterfaceController {
                     searchedBook = book;
                     txtBookReturnCode.setDisable(true);
                 } else
-                    clearFields();
+                    txtBookReturnCode.clear();
             }
         }
     }
@@ -291,7 +291,7 @@ public class InterfaceController {
                 db.Update(user);
                 setAlertDialog("User updated correctly", "", Alert.AlertType.INFORMATION);
             } else {
-                setAlertDialog("Empty fields", "Code field cannot be empty. HERE", Alert.AlertType.WARNING);
+                setAlertDialog("Empty fields", "Code field cannot be empty.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.USER_IDLE;
@@ -317,7 +317,7 @@ public class InterfaceController {
                     }
                 }
             } else {
-                setAlertDialog("Empty field", "Code field cannot be empty", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "Code field cannot be empty", Alert.AlertType.ERROR);
             }
             state = InterfaceStatus.USER_IDLE;
         }
@@ -339,7 +339,7 @@ public class InterfaceController {
 
             } else {
                 setAlertDialog("Empty fields", "Some or all required fields are empty.",
-                        Alert.AlertType.WARNING);
+                        Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -356,7 +356,7 @@ public class InterfaceController {
                 db.Update(book);
                 setAlertDialog("Book updated correctly", "", Alert.AlertType.INFORMATION);
             } else {
-                setAlertDialog("Empty fields", "ISBN field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty fields", "ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -382,7 +382,7 @@ public class InterfaceController {
                     }
                 }
             } else {
-                setAlertDialog("Empty field", "The ISBN field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "The ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
             state = InterfaceStatus.BOOK_IDLE;
         }
@@ -404,7 +404,7 @@ public class InterfaceController {
                 } else if (searchedUser.getFined() != null &&
                         searchedUser.getFined().toLocalDate().plusDays(7)
                                 .isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
-                    setAlertDialog("User is still fined", "", Alert.AlertType.WARNING);
+                    setAlertDialog("User is still fined", "", Alert.AlertType.ERROR);
                     //searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate().plusDays(7);
 
                 } else if (db.getLending(searchedUser, searchedBook) != null &&
@@ -527,24 +527,25 @@ public class InterfaceController {
     @FXML
     void onEditButtonClicked(MouseEvent event) {
         if (userMenu.isVisible()) {
-            if (!txtCode.getText().isEmpty())
+            if (!txtCode.getText().isEmpty()) {
                 state = InterfaceStatus.USER_EDIT;
+                disableFields(false, state);
+            }
             else {
                 state = InterfaceStatus.USER_IDLE;
-                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.ERROR);
             }
         }
         if (bookMenu.isVisible()) {
             if (!txtIsbn.getText().isEmpty()) {
                 state = InterfaceStatus.BOOK_EDIT;
+                disableFields(false, state);
             } else {
                 state = InterfaceStatus.BOOK_IDLE;
-                setAlertDialog("Empty field", "ISBN field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
         }
-
         setMainGridVisibility(state);
-        disableFields(false, state);
     }
 
     /**
