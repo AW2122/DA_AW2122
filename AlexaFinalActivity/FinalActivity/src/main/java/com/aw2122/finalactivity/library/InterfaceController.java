@@ -2,25 +2,29 @@ package com.aw2122.finalactivity.library;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.PersistenceException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 public class InterfaceController {
-    protected SessionFactory sessionFactory;
-
     DatabaseController db = new DatabaseController();
-
     InterfaceStatus state;
-
+    Object selectedObject;
     UsersEntity searchedUser;
     BooksEntity searchedBook;
 
@@ -132,6 +136,11 @@ public class InterfaceController {
     @FXML
     private GridPane userMenu;
 
+    /**
+     * When the user clicks on any of the upper menu icons, the variable status changes to the enum value that
+     * corresponds to that icon.
+     * @param event
+     */
     @FXML
     void onUserButtonClick(MouseEvent event) {
         setMainGridVisibility(InterfaceStatus.USER_IDLE);
@@ -154,38 +163,67 @@ public class InterfaceController {
         lblMenuTitle.setText("Return Menu");
     }
 
+    /**
+     * This method checks that the text fields are not empty, and then uses the code value to search the database
+     * for a user with that code.
+     * @param event
+     * @throws Exception
+     */
+
     @FXML
     void onUserSearchButtonClick(MouseEvent event) throws Exception {
         if (!txtUserReturnCode.getText().isEmpty()) {
             UsersEntity user;
             if (db.GetObject(txtUserReturnCode.getText(), "code").size() < 1) {
                 setAlertDialog("User not found", "", Alert.AlertType.WARNING);
+                txtBookReturnCode.clear();
             } else {
-                user = (UsersEntity) db.GetObject(txtUserReturnCode.getText(), "code").get(0);
-                txtUserReturn.setText(user.getName() + " " + user.getSurname());
-                searchedUser = user;
-                txtUserReturnCode.setDisable(true);
+                selectedObject = openModalWindow(db.GetObject(txtUserReturnCode.getText(), "code"));
+                if (selectedObject != null) {
+                    user = (UsersEntity) selectedObject;
+                    txtUserReturnCode.setText(user.getCode());
+                    txtUserReturn.setText(user.getName() + " " + user.getSurname());
+                    searchedUser = user;
+                    txtUserReturnCode.setDisable(true);
+                } else
+                    txtBookReturnCode.clear();
             }
         }
     }
 
+    /**
+     *  This method checks that the text fields are not empty, and then uses the ISBN value to search the database
+     *  for a book with said ISBN.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void onBookSearchButtonClick(MouseEvent event) throws Exception {
         if (!txtBookReturnCode.getText().isEmpty()) {
             BooksEntity book;
-            System.out.println(db.GetObject(txtBookReturnCode.getText(), "isbn").size());
             if (db.GetObject(txtBookReturnCode.getText(), "isbn").size() < 1) {
                 setAlertDialog("Book not found", "", Alert.AlertType.WARNING);
+                txtBookReturnCode.clear();
             } else {
-                book = (BooksEntity) db.GetObject(txtBookReturnCode.getText(), "isbn").get(0);
-                txtBookReturnCode.setText(book.getIsbn());
-                txtBookReturnTitle.setText(book.getTitle());
-                searchedBook = book;
-                txtBookReturnCode.setDisable(true);
+                selectedObject = openModalWindow(db.GetObject(txtBookReturnCode.getText(), "isbn"));
+                if (selectedObject != null) {
+                    book = (BooksEntity) selectedObject;
+                    txtBookReturnCode.setText(book.getIsbn());
+                    txtBookReturnTitle.setText(book.getTitle());
+                    searchedBook = book;
+                    txtBookReturnCode.setDisable(true);
+                } else
+                    txtBookReturnCode.clear();
             }
         }
     }
 
+    /**
+     * When the add button is clicked and the menu that is visible is either the borrow or return menu, the status
+     * variable changes and the disabled fields become enabled.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void OnAddBorrowReturnButtonClicked(MouseEvent event) throws Exception {
         if (lblMenuTitle.getText().equals("Borrow Menu"))
@@ -196,7 +234,28 @@ public class InterfaceController {
         disableFields(false, state);
     }
 
-
+    /**
+     * When the check button is clicked, depending on the value of the status variable, the method will perform
+     * different tasks. With USER_ADD, the method will check if there are empty fields, and if there are none, it will
+     * call a method from the DatabaseController class that adds the user to the database. Same function for the
+     * BOOK_ADD status, but to add books.
+     * With USER_EDIT, the method will check for a code in the text field (user must perform a search first), looks
+     * for said code in the database, fills the other text fields with the object information, allows the user to change
+     * the values and finally commits the changes made to the database (calling the method from the DatabaseController).
+     * Same function for BOOK_EDIT, but using the ISBN and it will edit a book.
+     * With USER_SEARCH it checks for a code in the text field, passes that code to the DatabaseController method call
+     * to search for a user, and then fills the text fields with the retrieved information.
+     * Same function for BOOK_SEARCH.
+     * With BORROW_ADD, the method checks that the user has not borrowed more than 3 books at the same time, that there
+     * still are copies left of the book that the user is tring to borrow (if there are none left, the user will be
+     * prompted to make a reservation of said book), it checks if the user has a fine and if so, if the fine is still
+     * valid. If all these checks are passed, it will call the method from the DatabaseController to add a lending to
+     * the database (adding both the user and the book, and removing 1 from the book count).
+     * The RETURN_ADD checks if the user has borrowed the book that's specified in the text field, adds 1 to the book
+     * count, checks if more than 14 days have passed since the user borrowed it.
+     * @param event
+     * @throws Exception
+     */
     @FXML
     void onCheckButtonClicked(MouseEvent event) throws Exception {
         if (state == InterfaceStatus.USER_ADD) {
@@ -232,7 +291,7 @@ public class InterfaceController {
                 db.Update(user);
                 setAlertDialog("User updated correctly", "", Alert.AlertType.INFORMATION);
             } else {
-                setAlertDialog("Empty fields", "Code field cannot be empty. HERE", Alert.AlertType.WARNING);
+                setAlertDialog("Empty fields", "Code field cannot be empty.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.USER_IDLE;
@@ -242,17 +301,23 @@ public class InterfaceController {
                 UsersEntity user;
                 if (db.GetObject(txtCode.getText(), "code").size() < 1) {
                     setAlertDialog("User not found", "", Alert.AlertType.ERROR);
+                    clearFields();
                 } else {
-                    user = (UsersEntity) db.GetObject(txtCode.getText(), "code").get(0);
-                    txtName.setText(String.valueOf(user.getName()));
-                    txtSurname.setText(user.getSurname());
-                    if (user.getBirthdate() != null) {
-                        dpBirthdate.setValue(user.getBirthdate().toLocalDate());
+                    selectedObject = openModalWindow(db.GetObject(txtCode.getText(), "code"));
+                    if (selectedObject != null) {
+                        user = (UsersEntity) selectedObject;
+                        txtCode.setText(user.getCode());
+                        txtName.setText(user.getName());
+                        txtSurname.setText(user.getSurname());
+                        if (user.getBirthdate() != null) {
+                            dpBirthdate.setValue(user.getBirthdate().toLocalDate());
+                        }
+                    } else {
+                        clearFields();
                     }
-                    setAlertDialog("User found", "", Alert.AlertType.INFORMATION);
                 }
             } else {
-                setAlertDialog("Empty field", "Code field cannot be empty", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "Code field cannot be empty", Alert.AlertType.ERROR);
             }
             state = InterfaceStatus.USER_IDLE;
         }
@@ -274,7 +339,7 @@ public class InterfaceController {
 
             } else {
                 setAlertDialog("Empty fields", "Some or all required fields are empty.",
-                        Alert.AlertType.WARNING);
+                        Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -291,7 +356,7 @@ public class InterfaceController {
                 db.Update(book);
                 setAlertDialog("Book updated correctly", "", Alert.AlertType.INFORMATION);
             } else {
-                setAlertDialog("Empty fields", "ISBN field cannot be empty. HERE", Alert.AlertType.WARNING);
+                setAlertDialog("Empty fields", "ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.BOOK_IDLE;
@@ -301,26 +366,31 @@ public class InterfaceController {
                 BooksEntity book;
                 if (db.GetObject(txtIsbn.getText(), "isbn").size() < 1) {
                     setAlertDialog("Book not found", "", Alert.AlertType.ERROR);
+                    clearFields();
                 } else {
-                    book = (BooksEntity) db.GetObject(txtIsbn.getText(), "isbn").get(0);
-                    txtIsbn.setText(String.valueOf(book.getIsbn()));
-                    txtTitle.setText(book.getTitle());
-                    copiesSlider.setValue(book.getCopies());
-                    txtPublisher.setText(book.getPublisher());
-                    txtOutline.setText(book.getOutline());
-                    txtCover.setText(book.getCover());
-                    setAlertDialog("Book found", "", Alert.AlertType.INFORMATION);
+                    selectedObject = openModalWindow(db.GetObject(txtIsbn.getText(), "isbn"));
+                    if (selectedObject != null) {
+                        book = (BooksEntity) selectedObject;
+                        txtIsbn.setText(book.getIsbn());
+                        txtTitle.setText(book.getTitle());
+                        copiesSlider.setValue(book.getCopies());
+                        txtPublisher.setText(book.getPublisher());
+                        txtOutline.setText(book.getOutline());
+                        txtCover.setText(book.getCover());
+                    } else {
+                        clearFields();
+                    }
                 }
             } else {
-                setAlertDialog("Empty field", "The ISBN field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "The ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
             state = InterfaceStatus.BOOK_IDLE;
         }
         if (state == InterfaceStatus.BORROW_ADD) {
-            if (!txtBookReturnCode.getText().isEmpty() && !txtUserReturnCode.getText().isEmpty()) {
+            if (!txtBookReturnTitle.getText().isEmpty() && !txtUserReturn.getText().isEmpty()) {
                 if (searchedUser.getLentBooks().size() >= 3) {
-                    setAlertDialog("This user has already borrowed 3 books", "The user must return a book before " +
-                            "they can borrow another one.", Alert.AlertType.INFORMATION);
+                    setAlertDialog("This user has already borrowed 3 books", "The user must return a " +
+                            "book before they can borrow another.", Alert.AlertType.INFORMATION);
                 } else if (searchedBook.getCopies() < 1) {
                     ButtonType result = setAlertDialog("There are currently no copies left of this book. ",
                             "Would you like to reserve it?", Alert.AlertType.CONFIRMATION);
@@ -332,12 +402,15 @@ public class InterfaceController {
                         db.postReservation(reservation);
                     }
                 } else if (searchedUser.getFined() != null &&
-                        searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
-                    setAlertDialog("User is still fined", "Fined until " +
-                            searchedUser.getFined().toLocalDate().plusDays(14), Alert.AlertType.WARNING);
+                        searchedUser.getFined().toLocalDate().plusDays(7)
+                                .isAfter(Date.valueOf(LocalDate.now()).toLocalDate())) {
+                    setAlertDialog("User is still fined", "", Alert.AlertType.ERROR);
+                    //searchedUser.getFined().toLocalDate().isAfter(Date.valueOf(LocalDate.now()).toLocalDate().plusDays(7);
 
-                } else if (searchedUser.getLentBooks().contains(new LendingEntity().getBook().equals(searchedBook.getIsbn()))) {
-                    setAlertDialog("already borrowed", "", Alert.AlertType.ERROR);
+                } else if (db.getLending(searchedUser, searchedBook) != null &&
+                        searchedUser.getLentBooks().contains(db.getLending(searchedUser, searchedBook))) {
+                    setAlertDialog("Already borrowed", "This book has already been borrowed " +
+                            "by this user.", Alert.AlertType.ERROR);
                 } else {
                     searchedUser.setFined(null);
                     db.Update(searchedUser);
@@ -370,7 +443,7 @@ public class InterfaceController {
             if (txtBookReturnCode.getText().isEmpty() && txtUserReturnCode.getText().isEmpty()) {
                 setAlertDialog("Empty fields", "The required fields cannot be empty.",
                         Alert.AlertType.WARNING);
-            } else {
+            } else if (db.getLending(searchedUser, searchedBook) != null) {
                 LendingEntity lending = db.getLending(searchedUser, searchedBook);
                 lending.setReturningdate(Date.valueOf(LocalDate.now()));
                 db.Update(lending);
@@ -380,12 +453,17 @@ public class InterfaceController {
                 if (LocalDate.now().isAfter(lending.getLendingdate().toLocalDate().plusDays(14))) {
                     searchedUser.setFined(Date.valueOf(LocalDate.now()));
                     db.Update(searchedUser);
+                    setAlertDialog("User fined", "The user has been fined due to late return date.",
+                            Alert.AlertType.INFORMATION);
                 }
                 if (!searchedBook.getReservedBy().isEmpty()) {
                     setAlertDialog("Notify user", searchedBook.getReservedBy().get(0).getBorrower().getName() + " " +
                             searchedBook.getReservedBy().get(0).getBorrower().getSurname() + " is next in line on the " +
                             "reservations list.", Alert.AlertType.INFORMATION);
                 }
+                setAlertDialog("Book returned correctly", "", Alert.AlertType.INFORMATION);
+            } else {
+                setAlertDialog("No records", "This book is not currently borrowed by this user.", Alert.AlertType.ERROR);
             }
             clearFields();
             state = InterfaceStatus.RETURN_IDLE;
@@ -394,6 +472,14 @@ public class InterfaceController {
         setMainGridVisibility(state);
     }
 
+    /**
+     * When called it recieves a string for the header and one for the message, and also an alert dialog type and uses
+     * these parameters to create an AlertDialog.
+     * @param header
+     * @param message
+     * @param alertType
+     * @return
+     */
     private ButtonType setAlertDialog(String header, String message, Alert.AlertType alertType) {
         Alert alertDialog = new Alert(alertType);
         alertDialog.setHeaderText(header);
@@ -402,6 +488,10 @@ public class InterfaceController {
         return alertDialog.getResult();
     }
 
+    /**
+     * The cancel button, depending on the set state, will change the state value.
+     * @param event
+     */
     @FXML
     void onCancelButtonClicked(MouseEvent event) {
         switch (state) {
@@ -415,6 +505,10 @@ public class InterfaceController {
         clearFields();
     }
 
+    /**
+     * Depending on which menu is visible, it will change the state value to one or another.
+     * @param event
+     */
     @FXML
     void onAddButtonClicked(MouseEvent event) {
         clearFields();
@@ -426,29 +520,38 @@ public class InterfaceController {
         disableFields(false, state);
     }
 
+    /**
+     * Same as the Add button, but it checks that the code/ISBN fields are not empty.
+     * @param event
+     */
     @FXML
     void onEditButtonClicked(MouseEvent event) {
         if (userMenu.isVisible()) {
-            if (!txtCode.getText().isEmpty())
+            if (!txtCode.getText().isEmpty()) {
                 state = InterfaceStatus.USER_EDIT;
+                disableFields(false, state);
+            }
             else {
                 state = InterfaceStatus.USER_IDLE;
-                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.ERROR);
             }
         }
         if (bookMenu.isVisible()) {
             if (!txtIsbn.getText().isEmpty()) {
                 state = InterfaceStatus.BOOK_EDIT;
+                disableFields(false, state);
             } else {
                 state = InterfaceStatus.BOOK_IDLE;
-                setAlertDialog("Empty field", "ISBN field cannot be empty.", Alert.AlertType.WARNING);
+                setAlertDialog("Empty field", "ISBN field cannot be empty.", Alert.AlertType.ERROR);
             }
         }
-
         setMainGridVisibility(state);
-        disableFields(false, state);
     }
 
+    /**
+     * Depending on which menu is visible, it will change the state value to one or another.
+     * @param event
+     */
     @FXML
     void onSearchButtonClick(MouseEvent event) {
         clearFields();
@@ -465,6 +568,31 @@ public class InterfaceController {
         Platform.exit();
     }
 
+    /**
+     * This method opens a modal window where a user or book list is shown to choose a specific user/book.
+     * @param objectList
+     * @return
+     * @throws Exception
+     */
+    Object openModalWindow(List<Object> objectList) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("list-chooser.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root, 400, 355);
+        ((ListController) fxmlLoader.getController()).setObjectList(objectList);
+        ((ListController) fxmlLoader.getController()).setInterfaceController(this);
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.showAndWait();
+        return ((ListController) fxmlLoader.getController()).selectedObject;
+    }
+
+    /**
+     * This method controls the visibility of the different menus by checking the state value.
+     * @param state
+     */
     void setMainGridVisibility(InterfaceStatus state) {
         hideGrids();
         switch (state) {
@@ -495,6 +623,9 @@ public class InterfaceController {
         }
     }
 
+    /**
+     * This method is used to hide all grids.
+     */
     void hideGrids() {
         userMenu.setVisible(false);
         bookMenu.setVisible(false);
@@ -504,6 +635,11 @@ public class InterfaceController {
         bottomPanelAdd.setVisible(false);
     }
 
+    /**
+     * This method controls which fields should be enabled/disabled depending on the state value.
+     * @param disable
+     * @param state
+     */
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
             case USER_ADD, USER_IDLE -> {
@@ -555,6 +691,9 @@ public class InterfaceController {
         }
     }
 
+    /**
+     * This method clears all fields.
+     */
     void clearFields() {
         txtCode.setText("");
         txtName.setText("");

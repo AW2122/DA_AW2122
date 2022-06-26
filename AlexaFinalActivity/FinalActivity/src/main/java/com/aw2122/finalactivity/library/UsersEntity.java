@@ -96,4 +96,9 @@ public class UsersEntity {
     public void setReservedBooks(List<ReservationsEntity> reservedBooks) {
         this.reservedBooks = reservedBooks;
     }
+
+    @Override
+    public String toString() {
+        return code + " - " + name + " " + surname;
+    }
 }

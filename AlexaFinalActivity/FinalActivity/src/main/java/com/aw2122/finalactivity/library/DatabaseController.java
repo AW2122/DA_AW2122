@@ -27,6 +27,14 @@ public class DatabaseController {
                 lendingEntityCRUD = new HibernateCRUD<>(new LendingEntity(), sessionFactory);
         }
 
+        /**
+         * This method takes two strings and depending on what the field name is, uses the crud of that type and calls
+         * the GetData method from HibernateCRUD.
+         * @param searchParameter
+         * @param fieldName
+         * @return
+         * @throws Exception
+         */
         public List<Object> GetObject (String searchParameter, String fieldName) throws Exception {
                 List result = null;
                         if (fieldName.equals("code")) {
@@ -39,6 +47,12 @@ public class DatabaseController {
                 return result;
         }
 
+        /**
+         * This method calls the InsertObject method from HibernateCRUD and depending on the instance type of the
+         * object, it uses a different CRUD type.
+         * @param object
+         * @return
+         */
         public boolean Insert(Object object) {
                 boolean success;
                 try {
@@ -59,6 +73,12 @@ public class DatabaseController {
                 return success;
         }
 
+        /**
+         * This method calls the UpdateObject method from HibernateCRUD, and depending on what the object is an
+         * instance of it uses a different CRUD type.
+         * @param object
+         * @return
+         */
         public boolean Update(Object object) {
                 boolean success;
                 try {
@@ -79,10 +99,31 @@ public class DatabaseController {
                 return success;
         }
 
+        /**
+         * This method recieves a book object and a user object and returns the lending object that contains both
+         * objects.
+         * @param user
+         * @param book
+         * @return
+         * @throws Exception
+         */
+
         public LendingEntity getLending(UsersEntity user, BooksEntity book) throws Exception {
-                return lendingEntityCRUD.GetLending(user, book);
+                LendingEntity lending = null;
+                try {
+                        lending = lendingEntityCRUD.GetLending(user, book);
+
+                } catch (Exception e){
+
+                }
+                return lending;
         }
 
+        /**
+         * This method created a reservation, using the API
+         * @param reservation
+         * @throws Exception
+         */
         public void postReservation(ReservationsEntity reservation) throws Exception {
                 HttpURLConnection connection = null;
                 String jsonInputString = new JSONObject()
@@ -111,6 +152,11 @@ public class DatabaseController {
                 }
         }
 
+        /**
+         * This method deletes the reservation, using the API.
+         * @param reservation
+         * @throws Exception
+         */
         public void deleteReservation(ReservationsEntity reservation) throws Exception {
                 HttpURLConnection connection = null;
                 try {
