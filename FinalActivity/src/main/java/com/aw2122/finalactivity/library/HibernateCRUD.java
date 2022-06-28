@@ -59,6 +59,14 @@ public class HibernateCRUD<T> {
         session.close();
     }
 
+    public void DeleteObject(T t) throws Exception {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(t);
+        transaction.commit();
+        session.close();
+    }
+
     /**
      * This method returns a LendingEntity that contains the book and the user that are passed as parameters.
      * @param user

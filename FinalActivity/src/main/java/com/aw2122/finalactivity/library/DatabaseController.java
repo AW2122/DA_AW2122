@@ -99,6 +99,21 @@ public class DatabaseController {
                 return success;
         }
 
+        public boolean Delete(Object object) {
+                boolean success;
+                try {
+                        if (object instanceof UsersEntity) {
+                                userCRUD.DeleteObject((UsersEntity) object);
+                        } else if (object instanceof BooksEntity) {
+                                bookCRUD.DeleteObject((BooksEntity) object);
+                        }
+                        success = true;
+                } catch (Exception e) {
+                        success = false;
+                }
+                return success;
+        }
+
         /**
          * This method recieves a book object and a user object and returns the lending object that contains both
          * objects.
@@ -173,5 +188,29 @@ public class DatabaseController {
                         if (connection != null)
                                 connection.disconnect();
                 }
+        }
+
+        public boolean deleteBook(BooksEntity book) throws Exception {
+                boolean success;
+                HttpURLConnection connection = null;
+                try {
+                        URL url = new URL("http://localhost:8080/aw2122-api-rest/books/" + book.getIsbn());
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("DELETE");
+                        if (connection.getResponseCode() != 200) {
+                                System.out.println(connection.getResponseCode());
+                                throw new Exception("Reservation DELETE request failed.");
+                        } else {
+                                success = true;
+                        }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        success = false;
+                } finally {
+                        if (connection != null)
+                                connection.disconnect();
+                }
+                return success;
         }
 }

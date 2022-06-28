@@ -37,4 +37,15 @@ public class ReservationsController {
     public ReservationsEntity saveReservation (@Validated @RequestBody ReservationsEntity reservation) {
         return reservationsDAO.save(reservation);
     }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteReservation (@PathVariable(value = "id") int id) {
+        Optional<ReservationsEntity> reservation = reservationsDAO.findById(id);
+        if (reservation.isPresent()) {
+            reservationsDAO.deleteById(id);
+            return ResponseEntity.ok().body("Deleted");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -52,6 +52,7 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -72,6 +73,11 @@
                         <Image url="@edit_FILL0_wght400_GRAD0_opsz48.png" />
                     </image>
                 </ImageView>
+            <ImageView fitHeight="35.0" fitWidth="35.0" onMouseClicked="#onDeleteButtonClicked" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@delete_FILL0_wght400_GRAD0_opsz48.png" />
+               </image>
+            </ImageView>
             </children>
         </GridPane>
         <GridPane fx:id="bottomSaveCancel" layoutY="479.0" prefHeight="86.0" prefWidth="536.0" style="-fx-background-color: #0099dd;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

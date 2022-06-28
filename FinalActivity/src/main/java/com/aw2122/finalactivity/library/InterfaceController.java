@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.type.YesNoType;
 
 import javax.persistence.PersistenceException;
 import java.sql.Date;
@@ -139,6 +140,7 @@ public class InterfaceController {
     /**
      * When the user clicks on any of the upper menu icons, the variable status changes to the enum value that
      * corresponds to that icon.
+     *
      * @param event
      */
     @FXML
@@ -166,6 +168,7 @@ public class InterfaceController {
     /**
      * This method checks that the text fields are not empty, and then uses the code value to search the database
      * for a user with that code.
+     *
      * @param event
      * @throws Exception
      */
@@ -192,8 +195,9 @@ public class InterfaceController {
     }
 
     /**
-     *  This method checks that the text fields are not empty, and then uses the ISBN value to search the database
-     *  for a book with said ISBN.
+     * This method checks that the text fields are not empty, and then uses the ISBN value to search the database
+     * for a book with said ISBN.
+     *
      * @param event
      * @throws Exception
      */
@@ -221,6 +225,7 @@ public class InterfaceController {
     /**
      * When the add button is clicked and the menu that is visible is either the borrow or return menu, the status
      * variable changes and the disabled fields become enabled.
+     *
      * @param event
      * @throws Exception
      */
@@ -253,6 +258,7 @@ public class InterfaceController {
      * the database (adding both the user and the book, and removing 1 from the book count).
      * The RETURN_ADD checks if the user has borrowed the book that's specified in the text field, adds 1 to the book
      * count, checks if more than 14 days have passed since the user borrowed it.
+     *
      * @param event
      * @throws Exception
      */
@@ -468,6 +474,36 @@ public class InterfaceController {
             clearFields();
             state = InterfaceStatus.RETURN_IDLE;
         }
+        if (state == InterfaceStatus.USER_DELETE) {
+            UsersEntity user;
+            user = (UsersEntity) selectedObject;
+            ButtonType result = setAlertDialog("This action cannot be reversed",
+                    "Are you sure you want to delete this user: " + user.toString() + "?", Alert.AlertType.CONFIRMATION);
+            if (result == ButtonType.OK) {
+                if (db.Delete(user)) {
+                    setAlertDialog("User deleted", "", Alert.AlertType.INFORMATION);
+                } else {
+                    setAlertDialog("User could not be deleted", "", Alert.AlertType.ERROR);
+                }
+            }
+            clearFields();
+            state = InterfaceStatus.USER_IDLE;
+        }
+        if (state == InterfaceStatus.BOOK_DELETE) {
+            BooksEntity book;
+            book = (BooksEntity) selectedObject;
+            ButtonType result = setAlertDialog("This action cannot be reversed",
+                    "Are you sure you want to delete this book: " + book.toString() + "?", Alert.AlertType.CONFIRMATION);
+            if (result == ButtonType.OK) {
+                if (db.deleteBook(book)) {
+                    setAlertDialog("Book deleted", "", Alert.AlertType.INFORMATION);
+                } else {
+                    setAlertDialog("Book could not be deleted", "", Alert.AlertType.ERROR);
+                }
+            }
+            clearFields();
+            state = InterfaceStatus.BOOK_IDLE;
+        }
         disableFields(true, state);
         setMainGridVisibility(state);
     }
@@ -475,6 +511,7 @@ public class InterfaceController {
     /**
      * When called it recieves a string for the header and one for the message, and also an alert dialog type and uses
      * these parameters to create an AlertDialog.
+     *
      * @param header
      * @param message
      * @param alertType
@@ -490,6 +527,7 @@ public class InterfaceController {
 
     /**
      * The cancel button, depending on the set state, will change the state value.
+     *
      * @param event
      */
     @FXML
@@ -507,6 +545,7 @@ public class InterfaceController {
 
     /**
      * Depending on which menu is visible, it will change the state value to one or another.
+     *
      * @param event
      */
     @FXML
@@ -522,6 +561,7 @@ public class InterfaceController {
 
     /**
      * Same as the Add button, but it checks that the code/ISBN fields are not empty.
+     *
      * @param event
      */
     @FXML
@@ -530,8 +570,7 @@ public class InterfaceController {
             if (!txtCode.getText().isEmpty()) {
                 state = InterfaceStatus.USER_EDIT;
                 disableFields(false, state);
-            }
-            else {
+            } else {
                 state = InterfaceStatus.USER_IDLE;
                 setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.ERROR);
             }
@@ -550,6 +589,7 @@ public class InterfaceController {
 
     /**
      * Depending on which menu is visible, it will change the state value to one or another.
+     *
      * @param event
      */
     @FXML
@@ -564,12 +604,36 @@ public class InterfaceController {
     }
 
     @FXML
+    void onDeleteButtonClicked(MouseEvent event) {
+        if (userMenu.isVisible()) {
+            if (!txtCode.getText().isEmpty()) {
+                state = InterfaceStatus.USER_DELETE;
+                disableFields(true, state);
+            } else {
+                state = InterfaceStatus.USER_IDLE;
+                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.ERROR);
+            }
+        }
+        if (bookMenu.isVisible()) {
+            if (!txtIsbn.getText().isEmpty()) {
+                state = InterfaceStatus.BOOK_DELETE;
+                disableFields(true, state);
+            } else {
+                state = InterfaceStatus.BOOK_IDLE;
+                setAlertDialog("Empty field", "Code field cannot be empty.", Alert.AlertType.ERROR);
+            }
+        }
+        setMainGridVisibility(state);
+    }
+
+    @FXML
     void onExitButtonClick(MouseEvent event) {
         Platform.exit();
     }
 
     /**
      * This method opens a modal window where a user or book list is shown to choose a specific user/book.
+     *
      * @param objectList
      * @return
      * @throws Exception
@@ -591,6 +655,7 @@ public class InterfaceController {
 
     /**
      * This method controls the visibility of the different menus by checking the state value.
+     *
      * @param state
      */
     void setMainGridVisibility(InterfaceStatus state) {
@@ -604,11 +669,11 @@ public class InterfaceController {
                 bookMenu.setVisible(true);
                 bottomPanelMenu.setVisible(true);
             }
-            case USER_ADD, USER_EDIT, USER_SEARCH -> {
+            case USER_ADD, USER_EDIT, USER_SEARCH, USER_DELETE -> {
                 userMenu.setVisible(true);
                 bottomSaveCancel.setVisible(true);
             }
-            case BOOK_ADD, BOOK_EDIT, BOOK_SEARCH -> {
+            case BOOK_ADD, BOOK_EDIT, BOOK_SEARCH, BOOK_DELETE -> {
                 bookMenu.setVisible(true);
                 bottomSaveCancel.setVisible(true);
             }
@@ -637,12 +702,13 @@ public class InterfaceController {
 
     /**
      * This method controls which fields should be enabled/disabled depending on the state value.
+     *
      * @param disable
      * @param state
      */
     void disableFields(Boolean disable, InterfaceStatus state) {
         switch (state) {
-            case USER_ADD, USER_IDLE -> {
+            case USER_ADD, USER_IDLE, USER_DELETE -> {
                 txtCode.setDisable(disable);
                 txtName.setDisable(disable);
                 txtSurname.setDisable(disable);
@@ -660,7 +726,7 @@ public class InterfaceController {
                 txtSurname.setDisable(disable);
                 dpBirthdate.setDisable(disable);
             }
-            case BOOK_ADD, BOOK_IDLE -> {
+            case BOOK_ADD, BOOK_IDLE, BOOK_DELETE -> {
                 txtIsbn.setDisable(disable);
                 txtTitle.setDisable(disable);
                 txtPublisher.setDisable(disable);

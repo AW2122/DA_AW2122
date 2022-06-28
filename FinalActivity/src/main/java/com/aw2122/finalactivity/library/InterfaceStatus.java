@@ -13,6 +13,7 @@ public enum InterfaceStatus {
     BORROW_IDLE,
     BORROW_ADD,
     RETURN_IDLE,
-    RETURN_ADD;
-
+    RETURN_ADD,
+    USER_DELETE,
+    BOOK_DELETE;
 }
